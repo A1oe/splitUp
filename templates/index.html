@@ -1,0 +1,123 @@
+<!-- 
+SplitUp Web Application - Main Upload Page
+This is the home page where users upload CSV files containing transaction data
+The page includes a file upload form and instructions for the expected CSV format
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SplitUp - Debt Simplifier</title>
+    <!-- Embedded CSS for styling the upload interface -->
+    <style>
+        /* Main page layout and typography */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        /* White container box with shadow for main content */
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Main heading styling */
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        /* File upload area with dashed border - encourages drag & drop feel */
+        .upload-section {
+            border: 2px dashed #ddd;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* Hover effect for upload section to show interactivity */
+        .upload-section:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        /* File input styling */
+        input[type="file"] {
+            margin: 10px 0;
+            padding: 10px;
+        }
+        
+        /* Primary button styling */
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* Button hover effect */
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        /* Information section styling - light blue background */
+        .info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        /* Info section heading */
+        .info h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main page title -->
+        <h1>SplitUp - Debt Simplifier</h1>
+        
+        <!-- File upload form - sends POST request to /upload route -->
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="upload-section">
+                <h3>Upload your CSV file</h3>
+                <p>Select a CSV file containing your transaction data</p>
+                <!-- File input - only accepts .csv files -->
+                <input type="file" name="file" accept=".csv" required>
+                <br><br>
+                <!-- Submit button triggers form processing -->
+                <button type="submit">Process Transactions</button>
+            </div>
+        </form>
+        
+        <!-- Instructions section explaining CSV format requirements -->
+        <div class="info">
+            <h3>CSV Format</h3>
+            <p>Your CSV file should have the following format (one transaction per line):</p>
+            <!-- Shows the expected CSV format pattern -->
+            <code>payer,debtor,amount</code>
+            <p><strong>Example:</strong></p>
+            <!-- Example transactions showing real data format -->
+            <code>Alice,Bob,25.50<br>
+            Bob,Charlie,15.00<br>
+            Charlie,Alice,30.75</code>
+            <p>SplitUp will analyze all transactions and show you the minimum number of payments needed to settle all debts.</p>
+        </div>
+    </div>
+</body>
+</html>

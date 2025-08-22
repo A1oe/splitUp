@@ -1,0 +1,237 @@
+<!--
+SplitUp Web Application - Results Display Page
+This page shows the results after processing a CSV file of transactions
+Displays original transactions, simplified payments, and individual balances
+Uses Flask/Jinja2 templating to display dynamic data from the Python backend
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SplitUp Results</title>
+    <!-- Embedded CSS for results page styling -->
+    <style>
+        /* Main page layout - matches index.html styling */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        /* White container box for main content */
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Page and section headings */
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        /* Statistics summary box - green background to show success */
+        .stats {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Individual transaction display boxes */
+        .transaction {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff; /* Blue left border for emphasis */
+        }
+
+        /* Blue color for names/amounts in transactions */
+        .transaction strong {
+            color: #007bff;
+        }
+
+        /* Success message when no transactions are needed */
+        .no-transactions {
+            background-color: #d4edda;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Back button styling - gray to be less prominent than main actions */
+        .back-button {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        /* Back button hover effect */
+        .back-button:hover {
+            background-color: #545b62;
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Individual person balance details - yellow background for info */
+        .person-details {
+            background-color: #fff3cd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        
+        /* Collapsible section styling */
+        .collapsible-header {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 10px 0;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .collapsible-header:hover {
+            background-color: #dee2e6;
+        }
+        
+        .collapsible-content {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .collapsible-content.show {
+            display: block;
+        }
+        
+        .collapse-arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .collapse-arrow.expanded {
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main page title -->
+        <h1>Transaction Results</h1>
+
+         <!-- Section showing simplified payment requirements -->
+        {% if transactions %}
+            <h2>Required Payments</h2>
+            <!-- Loop through transactions list (simplified payments) -->
+            {% for transaction in transactions %}
+                <div class="transaction">
+                    <!-- Display format: "Debtor must pay $Amount to Creditor" -->
+                    <strong>{{ transaction.debtor }}</strong> must pay <strong>${{ "%.2f"|format(transaction.amount) }}</strong> to <strong>{{ transaction.creditor }}</strong>
+                </div>
+            {% endfor %}
+        {% else %}
+            <!-- Special case when no payments are needed (all debts balanced) -->
+            <div class="no-transactions">
+                <h3>🎉 No transactions necessary!</h3>
+                <p>Everyone has paid an equal amount for each other. All debts are already balanced!</p>
+            </div>
+        {% endif %}
+
+        <!-- Collapsible Summary Statistics -->
+        <div class="collapsible-header" onclick="toggleCollapse('summary-content', this)">
+            <h3 style="margin: 0;">Summary Statistics</h3>
+            <span class="collapse-arrow">▶</span>
+        </div>
+        <div id="summary-content" class="collapsible-content">
+            <div class="stats">
+                <!-- Data passed from Flask route: original_transactions, simplified_transactions, reduction -->
+                <p><strong>Original transactions:</strong> {{ original_transactions }}</p>
+                <p><strong>Simplified transactions:</strong> {{ simplified_transactions }}</p>
+                <p><strong>Reduction:</strong> {{ reduction }}%</p>
+            </div>
+        </div>
+
+        <!-- Collapsible Original Transactions Section -->
+        {% if original_transactions_list %}
+            <div class="collapsible-header" onclick="toggleCollapse('original-transactions-content', this)">
+                <h3 style="margin: 0;">Original Transactions</h3>
+                <span class="collapse-arrow">▶</span>
+            </div>
+            <div id="original-transactions-content" class="collapsible-content">
+                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                    <!-- Loop through original_transactions_list passed from Flask -->
+                    {% for transaction in original_transactions_list %}
+                        <div style="padding: 8px 0; border-bottom: 1px solid #dee2e6;">
+                            <!-- Display format: "Payer paid $Amount for Debtor" -->
+                            <strong>{{ transaction.payer }}</strong> paid <strong>${{ "%.2f"|format(transaction.amount) }}</strong> for <strong>{{ transaction.debtor }}</strong>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Collapsible Individual Balances Section -->
+        {% if people_details %}
+            <div class="collapsible-header" onclick="toggleCollapse('individual-balances-content', this)">
+                <h3 style="margin: 0;">Individual Balances</h3>
+                <span class="collapse-arrow">▶</span>
+            </div>
+            <div id="individual-balances-content" class="collapsible-content">
+                <!-- Loop through people_details list passed from Flask -->
+                {% for person in people_details %}
+                    <div class="person-details">
+                        <strong>{{ person.name }}:</strong>
+                        <!-- Conditional display based on positive/negative/zero balance -->
+                        {% if person.total > 0 %}
+                            Should receive ${{ "%.2f"|format(person.total) }}
+                        {% elif person.total < 0 %}
+                            Owes ${{ "%.2f"|format(-person.total) }}
+                        {% else %}
+                            Balanced
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Navigation link back to upload page -->
+        <a href="/" class="back-button">← Upload Another File</a>
+    </div>
+
+    <!-- JavaScript for collapsible functionality -->
+    <script>
+        function toggleCollapse(contentId, headerElement) {
+            const content = document.getElementById(contentId);
+            const arrow = headerElement.querySelector('.collapse-arrow');
+            
+            if (content.classList.contains('show')) {
+                // Collapse
+                content.classList.remove('show');
+                arrow.classList.remove('expanded');
+                arrow.textContent = '▶';
+            } else {
+                // Expand
+                content.classList.add('show');
+                arrow.classList.add('expanded');
+                arrow.textContent = '▼';
+            }
+        }
+    </script>
+</body>
+</html>
