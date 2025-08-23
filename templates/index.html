@@ -1,4 +1,4 @@
-<!-- 
+<!--
 SplitUp Web Application - Main Upload Page
 This is the home page where users upload CSV files containing transaction data
 The page includes a file upload form and instructions for the expected CSV format
@@ -63,11 +63,11 @@ The page includes a file upload form and instructions for the expected CSV forma
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-        
+
         /* Theme toggle button */
         .theme-toggle {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
             background-color: var(--bg-tertiary);
             color: var(--text-primary);
@@ -79,12 +79,12 @@ The page includes a file upload form and instructions for the expected CSV forma
             transition: all 0.3s ease;
             z-index: 1000;
         }
-        
+
         .theme-toggle:hover {
             background-color: var(--accent-blue);
             transform: scale(1.05);
         }
-        
+
         /* Container box with shadow for main content */
         .container {
             background-color: var(--bg-secondary);
@@ -93,14 +93,14 @@ The page includes a file upload form and instructions for the expected CSV forma
             box-shadow: 0 2px 10px var(--shadow);
             transition: background-color 0.3s ease;
         }
-        
+
         /* Main heading styling */
         h1 {
             color: var(--text-primary);
             text-align: center;
             margin-bottom: 30px;
         }
-        
+
         /* File upload area with dashed border - encourages drag & drop feel */
         .upload-section {
             border: 2px dashed var(--border-color);
@@ -110,13 +110,13 @@ The page includes a file upload form and instructions for the expected CSV forma
             margin-bottom: 20px;
             transition: all 0.3s ease;
         }
-        
+
         /* Hover effect for upload section to show interactivity */
         .upload-section:hover {
             border-color: var(--accent-blue);
             background-color: var(--bg-tertiary);
         }
-        
+
         /* File input styling */
         input[type="file"] {
             margin: 10px 0;
@@ -126,7 +126,7 @@ The page includes a file upload form and instructions for the expected CSV forma
             border: 1px solid var(--border-color);
             border-radius: 5px;
         }
-        
+
         /* Primary button styling */
         button {
             background-color: var(--accent-blue);
@@ -138,12 +138,12 @@ The page includes a file upload form and instructions for the expected CSV forma
             font-size: 16px;
             transition: background-color 0.3s ease;
         }
-        
+
         /* Button hover effect */
         button:hover {
             background-color: var(--accent-blue-hover);
         }
-        
+
         /* Information section styling */
         .info {
             background-color: var(--info-bg);
@@ -153,13 +153,13 @@ The page includes a file upload form and instructions for the expected CSV forma
             margin-top: 20px;
             transition: background-color 0.3s ease;
         }
-        
+
         /* Info section heading */
         .info h3 {
             margin-top: 0;
             color: var(--accent-blue);
         }
-        
+
         /* Manual input styles */
         .manual-section {
             border: 2px solid var(--accent-green);
@@ -169,14 +169,14 @@ The page includes a file upload form and instructions for the expected CSV forma
             background-color: var(--bg-tertiary);
             transition: background-color 0.3s ease;
         }
-        
+
         .form-group {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
             align-items: center;
         }
-        
+
         .form-group input {
             padding: 8px;
             border: 1px solid var(--border-color);
@@ -186,22 +186,22 @@ The page includes a file upload form and instructions for the expected CSV forma
             color: var(--text-primary);
             transition: all 0.3s ease;
         }
-        
+
         .form-group input:focus {
             outline: none;
             border-color: var(--accent-green);
             box-shadow: 0 0 5px rgba(74, 222, 128, 0.3);
         }
-        
+
         #payerInput, #debtorInput {
             flex: 1;
             min-width: 120px;
         }
-        
+
         #amountInput {
             width: 100px;
         }
-        
+
         .btn-small {
             padding: 8px 16px;
             border: none;
@@ -213,11 +213,11 @@ The page includes a file upload form and instructions for the expected CSV forma
             color: white;
             transition: background-color 0.3s ease;
         }
-        
+
         .btn-small:hover {
             background-color: var(--accent-green-hover);
         }
-        
+
         .btn-danger {
             background-color: var(--accent-red);
             color: white;
@@ -228,15 +228,15 @@ The page includes a file upload form and instructions for the expected CSV forma
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        
+
         .btn-danger:hover {
             background-color: var(--accent-red-hover);
         }
-        
+
         .transactions-list {
             margin-bottom: 15px;
         }
-        
+
         .transaction-item {
             background-color: var(--bg-primary);
             border: 1px solid var(--border-color);
@@ -248,11 +248,11 @@ The page includes a file upload form and instructions for the expected CSV forma
             align-items: center;
             transition: all 0.3s ease;
         }
-        
+
         .transaction-info {
             flex: 1;
         }
-        
+
         .autocomplete-suggestions {
             position: absolute;
             background: var(--bg-secondary);
@@ -264,29 +264,29 @@ The page includes a file upload form and instructions for the expected CSV forma
             width: 100%;
             border-radius: 0 0 5px 5px;
         }
-        
+
         .autocomplete-suggestion {
             padding: 8px;
             cursor: pointer;
             color: var(--text-primary);
             transition: background-color 0.3s ease;
         }
-        
+
         .autocomplete-suggestion:hover {
             background-color: var(--bg-tertiary);
         }
-        
+
         .input-container {
             position: relative;
         }
-        
+
         .empty-state {
             text-align: center;
             color: var(--text-muted);
             font-style: italic;
             padding: 15px;
         }
-        
+
         .error-message {
             background-color: var(--error-bg);
             color: var(--error-text);
@@ -296,13 +296,13 @@ The page includes a file upload form and instructions for the expected CSV forma
             display: none;
             transition: all 0.3s ease;
         }
-        
+
         .option-divider {
             text-align: center;
             margin: 30px 0;
             position: relative;
         }
-        
+
         .option-divider::before {
             content: '';
             position: absolute;
@@ -312,12 +312,132 @@ The page includes a file upload form and instructions for the expected CSV forma
             height: 1px;
             background: var(--border-color);
         }
-        
+
         .option-divider span {
             background: var(--bg-primary);
             padding: 0 20px;
             color: var(--text-muted);
             font-weight: bold;
+        }
+
+        /* Combined transactions section */
+        .transactions-section {
+            border: 2px solid var(--accent-blue);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            background-color: var(--bg-tertiary);
+            transition: background-color 0.3s ease;
+        }
+
+        .transactions-section h3 {
+            color: var(--text-primary);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* Process section */
+        .process-section {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .btn-success {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .btn-success:hover {
+            background-color: var(--accent-green-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px var(--shadow);
+        }
+
+        .btn-success:disabled {
+            background-color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Transaction source badge */
+        .transaction-source {
+            font-size: 11px;
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
+        /* Clear all button */
+        .btn-clear {
+            background-color: var(--accent-red);
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-clear:hover {
+            background-color: var(--accent-red-hover);
+        }
+        
+        /* File management styles */
+        .file-item {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .file-info {
+            flex: 1;
+            color: var(--text-primary);
+        }
+        
+        .file-name {
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+        
+        .file-stats {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .btn-file-remove {
+            background-color: var(--accent-red);
+            color: white;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-file-remove:hover {
+            background-color: var(--accent-red-hover);
         }
     </style>
 </head>
@@ -330,12 +450,40 @@ The page includes a file upload form and instructions for the expected CSV forma
     <div class="container">
         <!-- Main page title -->
         <h1>SplitUp - Debt Simplifier</h1>
-        
-        <!-- Manual input section -->
-        <div class="manual-section">
-            <h3>📝 Add Transactions Manually</h3>
-            <div class="error-message" id="errorMessage"></div>
+
+        <!-- Instructions section explaining CSV format requirements -->
+        <div class="info">
+            <h3>CSV Format</h3>
+            <p>Your CSV file should have the following format (one transaction per line):</p>
+            <!-- Shows the expected CSV format pattern -->
+            <code>payer,debtor,amount</code>
+            <p><strong>Example:</strong></p>
+            <!-- Example transactions showing real data format -->
+            <code>Alice,Bob,25.50<br>
+            Bob,Charlie,15.00<br>
+            Charlie,Alice,30.75</code>
+            <p>SplitUp will analyze all transactions and show you the minimum number of payments needed to settle all debts.</p>
+        </div>
+
+        <!-- CSV Upload Section -->
+        <div class="upload-section">
+            <h3>📂 Upload CSV Files (Optional)</h3>
+            <p>Upload one or more CSV files to load existing transactions</p>
+            <input type="file" id="csvInput" accept=".csv" multiple onchange="loadCSV()">
+            <div class="error-message" id="csvErrorMessage"></div>
             
+            <!-- Uploaded Files List -->
+            <div id="uploadedFilesList" style="margin-top: 15px; display: none;">
+                <h4 style="margin-bottom: 10px; color: var(--text-primary);">Uploaded Files:</h4>
+                <div id="filesContainer"></div>
+            </div>
+        </div>
+
+        <!-- Manual Input Section -->
+        <div class="manual-section">
+            <h3>📝 Add Transactions</h3>
+            <div class="error-message" id="errorMessage"></div>
+
             <div class="form-group">
                 <div class="input-container">
                     <input type="text" id="payerInput" placeholder="Who paid?" autocomplete="off">
@@ -350,83 +498,60 @@ The page includes a file upload form and instructions for the expected CSV forma
                 </div>
                 <button class="btn-small" onclick="addTransaction()">Add</button>
             </div>
-            
-            <div class="transactions-list">
-                <strong>Transactions (<span id="transactionCount">0</span>):</strong>
-                <div id="transactionsList">
-                    <div class="empty-state">No transactions added yet</div>
-                </div>
-            </div>
-            
-            <div style="text-align: center;">
-                <button class="btn-small" id="processManualBtn" onclick="processManualTransactions()" disabled style="padding: 10px 20px; font-size: 16px;">
-                    Process Manual Transactions
-                </button>
-            </div>
-            
-            <p style="font-size: 13px; color: #666; margin-top: 10px; text-align: center;">
+
+            <p style="font-size: 13px; color: var(--text-muted); margin: 10px 0; text-align: center;">
                 💡 Tip: Use Tab to move between fields, Enter to add quickly
             </p>
         </div>
-        
-        <!-- Divider -->
-        <div class="option-divider">
-            <span>OR</span>
-        </div>
-        
-        <!-- File upload form - sends POST request to /upload route -->
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <div class="upload-section">
-                <h3>Upload your CSV file</h3>
-                <p>Select a CSV file containing your transaction data</p>
-                <!-- File input - only accepts .csv files -->
-                <input type="file" name="file" accept=".csv" required>
-                <br><br>
-                <!-- Submit button triggers form processing -->
-                <button type="submit">Process Transactions</button>
+
+        <!-- Combined Transactions List -->
+        <div class="transactions-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">All Transactions (<span id="transactionCount">0</span>)</h3>
+                <button class="btn-clear" id="clearAllBtn" onclick="clearAllTransactions()" style="display: none;">
+                    🗑️ Clear All
+                </button>
             </div>
-        </form>
-        
-        <!-- Instructions section explaining CSV format requirements -->
-        <div class="info">
-            <h3>CSV Format</h3>
-            <p>Your CSV file should have the following format (one transaction per line):</p>
-            <!-- Shows the expected CSV format pattern -->
-            <code>payer,debtor,amount</code>
-            <p><strong>Example:</strong></p>
-            <!-- Example transactions showing real data format -->
-            <code>Alice,Bob,25.50<br>
-            Bob,Charlie,15.00<br>
-            Charlie,Alice,30.75</code>
-            <p>SplitUp will analyze all transactions and show you the minimum number of payments needed to settle all debts.</p>
+            <div id="transactionsList">
+                <div class="empty-state">No transactions added yet. Upload a CSV file or add transactions manually.</div>
+            </div>
         </div>
+
+        <!-- Single Process Button -->
+        <div class="process-section">
+            <button class="btn-success" id="processAllBtn" onclick="processAllTransactions()" disabled>
+                🚀 Process All Transactions
+            </button>
+        </div>
+
     </div>
 
     <script>
-        let manualTransactions = [];
+        let allTransactions = []; // Combined CSV and manual transactions
         let allNames = new Set();
-        
+        let uploadedFiles = new Map(); // Track uploaded files and their transaction counts
+
         // Theme management
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             const themeToggle = document.getElementById('themeToggle');
-            
+
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            
+
             if (newTheme === 'light') {
                 themeToggle.innerHTML = '🌙 Dark Mode';
             } else {
                 themeToggle.innerHTML = '🌞 Light Mode';
             }
         }
-        
+
         // Initialize theme on page load
         function initTheme() {
             const savedTheme = localStorage.getItem('theme');
             const themeToggle = document.getElementById('themeToggle');
-            
+
             if (savedTheme === 'light') {
                 document.documentElement.setAttribute('data-theme', 'light');
                 themeToggle.innerHTML = '🌙 Dark Mode';
@@ -474,12 +599,12 @@ The page includes a file upload form and instructions for the expected CSV forma
             input.addEventListener('input', function() {
                 const value = this.value.toLowerCase();
                 suggestions.innerHTML = '';
-                
+
                 if (value.length > 0) {
-                    const matches = Array.from(allNames).filter(name => 
+                    const matches = Array.from(allNames).filter(name =>
                         name.toLowerCase().includes(value)
                     );
-                    
+
                     if (matches.length > 0) {
                         matches.slice(0, 5).forEach(name => {
                             const div = document.createElement('div');
@@ -506,6 +631,132 @@ The page includes a file upload form and instructions for the expected CSV forma
         setupAutocomplete('payerInput', 'payerSuggestions');
         setupAutocomplete('debtorInput', 'debtorSuggestions');
 
+        // CSV loading functionality for multiple files
+        function loadCSV() {
+            const fileInput = document.getElementById('csvInput');
+            const files = fileInput.files;
+
+            if (!files || files.length === 0) return;
+
+            // Process each file
+            Array.from(files).forEach(file => {
+                // Skip if file already uploaded
+                if (uploadedFiles.has(file.name)) {
+                    showCSVError(`File "${file.name}" is already uploaded.`);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const csvData = e.target.result;
+                        const lines = csvData.split('\n');
+                        let csvTransactions = [];
+
+                        for (let line of lines) {
+                            line = line.trim();
+                            if (line) {
+                                const parts = line.split(',');
+                                if (parts.length === 3) {
+                                    const payer = parts[0].trim();
+                                    const debtor = parts[1].trim();
+                                    const amount = parseFloat(parts[2].trim());
+
+                                    if (payer && debtor && !isNaN(amount) && amount > 0) {
+                                        csvTransactions.push({
+                                            payer: payer,
+                                            debtor: debtor,
+                                            amount: amount,
+                                            source: 'csv',
+                                            filename: file.name
+                                        });
+
+                                        // Add names to autocomplete
+                                        allNames.add(payer);
+                                        allNames.add(debtor);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (csvTransactions.length > 0) {
+                            // Add transactions to the main array
+                            allTransactions.push(...csvTransactions);
+                            
+                            // Track the uploaded file
+                            uploadedFiles.set(file.name, csvTransactions.length);
+                            
+                            // Update displays
+                            updateTransactionsList();
+                            updateUploadedFilesList();
+                            
+                            document.getElementById('csvErrorMessage').style.display = 'none';
+                        } else {
+                            showCSVError(`No valid transactions found in "${file.name}".`);
+                        }
+                        
+                    } catch (error) {
+                        showCSVError(`Error reading "${file.name}". Please check the format.`);
+                    }
+                };
+
+                reader.readAsText(file);
+            });
+        }
+
+        function showCSVError(message) {
+            const errorDiv = document.getElementById('csvErrorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Update the uploaded files list display
+        function updateUploadedFilesList() {
+            const filesList = document.getElementById('uploadedFilesList');
+            const filesContainer = document.getElementById('filesContainer');
+            
+            if (uploadedFiles.size === 0) {
+                filesList.style.display = 'none';
+                return;
+            }
+            
+            filesList.style.display = 'block';
+            filesContainer.innerHTML = '';
+            
+            uploadedFiles.forEach((transactionCount, filename) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-name">📄 ${filename}</div>
+                        <div class="file-stats">${transactionCount} transaction${transactionCount !== 1 ? 's' : ''}</div>
+                    </div>
+                    <button class="btn-file-remove" onclick="removeFileTransactions('${filename}')">Remove</button>
+                `;
+                filesContainer.appendChild(fileItem);
+            });
+        }
+
+        // Remove all transactions from a specific file
+        function removeFileTransactions(filename) {
+            if (confirm(`Remove all transactions from "${filename}"?`)) {
+                // Remove transactions from the specific file
+                allTransactions = allTransactions.filter(t => t.filename !== filename);
+                
+                // Remove file from tracking
+                uploadedFiles.delete(filename);
+                
+                // Update displays
+                updateTransactionsList();
+                updateUploadedFilesList();
+                
+                // Clear file input if no files remain
+                if (uploadedFiles.size === 0) {
+                    document.getElementById('csvInput').value = '';
+                }
+            }
+        }
+
         function addTransaction() {
             const payer = document.getElementById('payerInput').value.trim();
             const debtor = document.getElementById('debtorInput').value.trim();
@@ -526,10 +777,11 @@ The page includes a file upload form and instructions for the expected CSV forma
             }
 
             // Add to transactions
-            manualTransactions.push({
+            allTransactions.push({
                 payer: payer,
                 debtor: debtor,
-                amount: amount
+                amount: amount,
+                source: 'manual'
             });
 
             // Add names to autocomplete
@@ -543,36 +795,72 @@ The page includes a file upload form and instructions for the expected CSV forma
 
             // Update display
             updateTransactionsList();
-            
+
             // Focus back to first input for quick entry
             document.getElementById('payerInput').focus();
         }
 
         function removeTransaction(index) {
-            manualTransactions.splice(index, 1);
+            allTransactions.splice(index, 1);
             updateTransactionsList();
         }
 
         function updateTransactionsList() {
             const list = document.getElementById('transactionsList');
             const count = document.getElementById('transactionCount');
-            const processBtn = document.getElementById('processManualBtn');
+            const processBtn = document.getElementById('processAllBtn');
+            const clearBtn = document.getElementById('clearAllBtn');
 
-            count.textContent = manualTransactions.length;
+            count.textContent = allTransactions.length;
 
-            if (manualTransactions.length === 0) {
-                list.innerHTML = '<div class="empty-state">No transactions added yet</div>';
+            if (allTransactions.length === 0) {
+                list.innerHTML = '<div class="empty-state">No transactions added yet. Upload a CSV file or add transactions manually.</div>';
                 processBtn.disabled = true;
+                clearBtn.style.display = 'none';
             } else {
-                list.innerHTML = manualTransactions.map((t, index) => `
-                    <div class="transaction-item">
-                        <div class="transaction-info">
-                            <strong>${t.payer}</strong> paid $${t.amount.toFixed(2)} to <strong>${t.debtor}</strong>
+                list.innerHTML = allTransactions.map((t, index) => {
+                    let sourceLabel = '';
+                    if (t.source === 'csv') {
+                        sourceLabel = `📄 ${t.filename}`;
+                    } else {
+                        sourceLabel = '✏️ Manual';
+                    }
+                    
+                    return `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <strong>${t.payer}</strong> paid $${t.amount.toFixed(2)} to <strong>${t.debtor}</strong>
+                                <span class="transaction-source">${sourceLabel}</span>
+                            </div>
+                            <button class="btn-danger" onclick="removeTransaction(${index})">×</button>
                         </div>
-                        <button class="btn-danger" onclick="removeTransaction(${index})">×</button>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
                 processBtn.disabled = false;
+                clearBtn.style.display = 'inline-block';
+            }
+        }
+
+        function clearAllTransactions() {
+            if (confirm('Are you sure you want to clear all transactions? This cannot be undone.')) {
+                allTransactions = [];
+                allNames.clear();
+                uploadedFiles.clear(); // Clear uploaded files tracking
+                
+                updateTransactionsList();
+                updateUploadedFilesList(); // Update files list display
+
+                // Clear CSV input
+                document.getElementById('csvInput').value = '';
+
+                // Clear manual input fields
+                document.getElementById('payerInput').value = '';
+                document.getElementById('debtorInput').value = '';
+                document.getElementById('amountInput').value = '';
+
+                // Clear error messages
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('csvErrorMessage').style.display = 'none';
             }
         }
 
@@ -582,13 +870,13 @@ The page includes a file upload form and instructions for the expected CSV forma
             errorDiv.style.display = 'block';
         }
 
-        function processManualTransactions() {
-            if (manualTransactions.length === 0) return;
+        function processAllTransactions() {
+            if (allTransactions.length === 0) return;
 
             // Show loading state
-            const processBtn = document.getElementById('processManualBtn');
+            const processBtn = document.getElementById('processAllBtn');
             const originalText = processBtn.textContent;
-            processBtn.textContent = 'Processing...';
+            processBtn.textContent = '⏳ Processing...';
             processBtn.disabled = true;
 
             // Send to server
@@ -598,7 +886,11 @@ The page includes a file upload form and instructions for the expected CSV forma
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    transactions: manualTransactions
+                    transactions: allTransactions.map(t => ({
+                        payer: t.payer,
+                        debtor: t.debtor,
+                        amount: t.amount
+                    }))
                 })
             })
             .then(response => {
