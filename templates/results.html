@@ -12,109 +12,214 @@ Uses Flask/Jinja2 templating to display dynamic data from the Python backend
     <title>SplitUp Results</title>
     <!-- Embedded CSS for results page styling -->
     <style>
+        /* CSS Variables for theming */
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #3a3a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #999999;
+            --border-color: #555555;
+            --accent-blue: #4a9eff;
+            --accent-blue-hover: #357abd;
+            --accent-green: #4ade80;
+            --accent-green-hover: #22c55e;
+            --accent-red: #ef4444;
+            --accent-red-hover: #dc2626;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --stats-bg: #1a3d2e;
+            --transaction-bg: #2a2a2a;
+            --person-details-bg: #3d3d1a;
+            --no-transactions-bg: #1a3d2e;
+            --no-transactions-text: #4ade80;
+            --no-transactions-border: #22c55e;
+        }
+
+        /* Light theme variables */
+        [data-theme="light"] {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #6c757d;
+            --border-color: #dddddd;
+            --accent-blue: #007bff;
+            --accent-blue-hover: #0056b3;
+            --accent-green: #28a745;
+            --accent-green-hover: #218838;
+            --accent-red: #dc3545;
+            --accent-red-hover: #c82333;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --stats-bg: #e8f5e8;
+            --transaction-bg: #f8f9fa;
+            --person-details-bg: #fff3cd;
+            --no-transactions-bg: #d4edda;
+            --no-transactions-text: #155724;
+            --no-transactions-border: #c3e6cb;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--accent-blue);
+            transform: scale(1.05);
+        }
+
         /* Main page layout - matches index.html styling */
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* White container box for main content */
+        /* Container box for main content */
         .container {
-            background-color: white;
+            background-color: var(--bg-secondary);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--shadow);
+            transition: background-color 0.3s ease;
         }
 
         /* Page and section headings */
         h1, h2 {
-            color: #333;
+            color: var(--text-primary);
             text-align: center;
         }
 
         /* Statistics summary box - green background to show success */
         .stats {
-            background-color: #e8f5e8;
+            background-color: var(--stats-bg);
+            color: var(--text-primary);
             padding: 15px;
             border-radius: 5px;
             margin: 20px 0;
             text-align: center;
+            transition: background-color 0.3s ease;
         }
 
         /* Individual transaction display boxes */
         .transaction {
-            background-color: #f8f9fa;
+            background-color: var(--transaction-bg);
+            color: var(--text-primary);
             padding: 15px;
             margin: 10px 0;
             border-radius: 5px;
-            border-left: 4px solid #007bff; /* Blue left border for emphasis */
+            border-left: 4px solid var(--accent-blue);
+            transition: background-color 0.3s ease;
         }
 
         /* Blue color for names/amounts in transactions */
         .transaction strong {
-            color: #007bff;
+            color: var(--accent-blue);
         }
 
         /* Success message when no transactions are needed */
         .no-transactions {
-            background-color: #d4edda;
+            background-color: var(--no-transactions-bg);
             padding: 20px;
             border-radius: 5px;
             text-align: center;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            color: var(--no-transactions-text);
+            border: 1px solid var(--no-transactions-border);
+            transition: background-color 0.3s ease;
         }
 
         /* Back button styling - gray to be less prominent than main actions */
         .back-button {
-            background-color: #6c757d;
+            background-color: var(--text-muted);
             color: white;
             padding: 10px 20px;
             text-decoration: none;
             border-radius: 5px;
             display: inline-block;
             margin-top: 20px;
+            transition: background-color 0.3s ease;
         }
 
         /* Back button hover effect */
         .back-button:hover {
-            background-color: #545b62;
+            background-color: var(--accent-blue);
             text-decoration: none;
             color: white;
         }
 
         /* Individual person balance details - yellow background for info */
         .person-details {
-            background-color: #fff3cd;
+            background-color: var(--person-details-bg);
+            color: var(--text-primary);
             padding: 10px;
             margin: 5px 0;
             border-radius: 3px;
             font-size: 14px;
+            transition: background-color 0.3s ease;
         }
         
         /* Collapsible section styling */
         .collapsible-header {
             cursor: pointer;
             padding: 10px;
-            background-color: #e9ecef;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
             border-radius: 5px;
             margin: 10px 0;
             user-select: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background-color 0.3s ease;
         }
         
         .collapsible-header:hover {
-            background-color: #dee2e6;
+            background-color: var(--accent-blue);
         }
         
         .collapsible-content {
             display: none;
             margin-bottom: 20px;
+        }
+        
+        /* Original transactions list styling */
+        .original-transactions-list {
+            background-color: var(--transaction-bg);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .original-transaction-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .original-transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .original-transaction-item strong {
+            color: var(--accent-blue);
         }
         
         .collapsible-content.show {
@@ -131,6 +236,11 @@ Uses Flask/Jinja2 templating to display dynamic data from the Python backend
     </style>
 </head>
 <body>
+    <!-- Theme toggle button -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+        🌞 Light Mode
+    </button>
+
     <div class="container">
         <!-- Main page title -->
         <h1>Transaction Results</h1>
@@ -174,10 +284,10 @@ Uses Flask/Jinja2 templating to display dynamic data from the Python backend
                 <span class="collapse-arrow">▶</span>
             </div>
             <div id="original-transactions-content" class="collapsible-content">
-                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                <div class="original-transactions-list">
                     <!-- Loop through original_transactions_list passed from Flask -->
                     {% for transaction in original_transactions_list %}
-                        <div style="padding: 8px 0; border-bottom: 1px solid #dee2e6;">
+                        <div class="original-transaction-item">
                             <!-- Display format: "Payer paid $Amount for Debtor" -->
                             <strong>{{ transaction.payer }}</strong> paid <strong>${{ "%.2f"|format(transaction.amount) }}</strong> for <strong>{{ transaction.debtor }}</strong>
                         </div>
@@ -214,8 +324,44 @@ Uses Flask/Jinja2 templating to display dynamic data from the Python backend
         <a href="/" class="back-button">← Upload Another File</a>
     </div>
 
-    <!-- JavaScript for collapsible functionality -->
+    <!-- JavaScript for collapsible functionality and theme management -->
     <script>
+        // Theme management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const themeToggle = document.getElementById('themeToggle');
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            if (newTheme === 'light') {
+                themeToggle.innerHTML = '🌙 Dark Mode';
+            } else {
+                themeToggle.innerHTML = '🌞 Light Mode';
+            }
+        }
+        
+        // Initialize theme on page load
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeToggle = document.getElementById('themeToggle');
+            
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = '🌙 Dark Mode';
+            } else {
+                // Default to dark mode
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '🌞 Light Mode';
+            }
+        }
+
+        // Initialize theme when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+        });
+
         function toggleCollapse(contentId, headerElement) {
             const content = document.getElementById(contentId);
             const arrow = headerElement.querySelector('.collapse-arrow');

@@ -11,86 +11,368 @@ The page includes a file upload form and instructions for the expected CSV forma
     <title>SplitUp - Debt Simplifier</title>
     <!-- Embedded CSS for styling the upload interface -->
     <style>
+        /* CSS Variables for theming */
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #3a3a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #999999;
+            --border-color: #555555;
+            --accent-blue: #4a9eff;
+            --accent-blue-hover: #357abd;
+            --accent-green: #4ade80;
+            --accent-green-hover: #22c55e;
+            --accent-red: #ef4444;
+            --accent-red-hover: #dc2626;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --info-bg: #1e3a5f;
+            --error-bg: #5c1e1e;
+            --error-text: #fca5a5;
+        }
+
+        /* Light theme variables */
+        [data-theme="light"] {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #6c757d;
+            --border-color: #dddddd;
+            --accent-blue: #007bff;
+            --accent-blue-hover: #0056b3;
+            --accent-green: #28a745;
+            --accent-green-hover: #218838;
+            --accent-red: #dc3545;
+            --accent-red-hover: #c82333;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --info-bg: #e7f3ff;
+            --error-bg: #f8d7da;
+            --error-text: #721c24;
+        }
+
         /* Main page layout and typography */
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
-        /* White container box with shadow for main content */
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--accent-blue);
+            transform: scale(1.05);
+        }
+        
+        /* Container box with shadow for main content */
         .container {
-            background-color: white;
+            background-color: var(--bg-secondary);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--shadow);
+            transition: background-color 0.3s ease;
         }
         
         /* Main heading styling */
         h1 {
-            color: #333;
+            color: var(--text-primary);
             text-align: center;
             margin-bottom: 30px;
         }
         
         /* File upload area with dashed border - encourages drag & drop feel */
         .upload-section {
-            border: 2px dashed #ddd;
+            border: 2px dashed var(--border-color);
             padding: 30px;
             text-align: center;
             border-radius: 10px;
             margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
         
         /* Hover effect for upload section to show interactivity */
         .upload-section:hover {
-            border-color: #007bff;
-            background-color: #f8f9fa;
+            border-color: var(--accent-blue);
+            background-color: var(--bg-tertiary);
         }
         
         /* File input styling */
         input[type="file"] {
             margin: 10px 0;
             padding: 10px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
         }
         
         /* Primary button styling */
         button {
-            background-color: #007bff;
+            background-color: var(--accent-blue);
             color: white;
             padding: 12px 30px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s ease;
         }
         
         /* Button hover effect */
         button:hover {
-            background-color: #0056b3;
+            background-color: var(--accent-blue-hover);
         }
         
-        /* Information section styling - light blue background */
+        /* Information section styling */
         .info {
-            background-color: #e7f3ff;
+            background-color: var(--info-bg);
+            color: var(--text-secondary);
             padding: 15px;
             border-radius: 5px;
             margin-top: 20px;
+            transition: background-color 0.3s ease;
         }
         
         /* Info section heading */
         .info h3 {
             margin-top: 0;
-            color: #0066cc;
+            color: var(--accent-blue);
+        }
+        
+        /* Manual input styles */
+        .manual-section {
+            border: 2px solid var(--accent-green);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background-color: var(--bg-tertiary);
+            transition: background-color 0.3s ease;
+        }
+        
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .form-group input {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 5px rgba(74, 222, 128, 0.3);
+        }
+        
+        #payerInput, #debtorInput {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        #amountInput {
+            width: 100px;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: var(--accent-green);
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-small:hover {
+            background-color: var(--accent-green-hover);
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-red);
+            color: white;
+            font-size: 12px;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--accent-red-hover);
+        }
+        
+        .transactions-list {
+            margin-bottom: 15px;
+        }
+        
+        .transaction-item {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .transaction-info {
+            flex: 1;
+        }
+        
+        .autocomplete-suggestions {
+            position: absolute;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: 100%;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .autocomplete-suggestion {
+            padding: 8px;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: background-color 0.3s ease;
+        }
+        
+        .autocomplete-suggestion:hover {
+            background-color: var(--bg-tertiary);
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 15px;
+        }
+        
+        .error-message {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        .option-divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .option-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-color);
+        }
+        
+        .option-divider span {
+            background: var(--bg-primary);
+            padding: 0 20px;
+            color: var(--text-muted);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
+    <!-- Theme toggle button -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+        🌞 Light Mode
+    </button>
+
     <div class="container">
         <!-- Main page title -->
         <h1>SplitUp - Debt Simplifier</h1>
+        
+        <!-- Manual input section -->
+        <div class="manual-section">
+            <h3>📝 Add Transactions Manually</h3>
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="form-group">
+                <div class="input-container">
+                    <input type="text" id="payerInput" placeholder="Who paid?" autocomplete="off">
+                    <div id="payerSuggestions" class="autocomplete-suggestions"></div>
+                </div>
+                <span>paid $</span>
+                <input type="number" id="amountInput" placeholder="0.00" step="0.01" min="0">
+                <span>to</span>
+                <div class="input-container">
+                    <input type="text" id="debtorInput" placeholder="Who received?" autocomplete="off">
+                    <div id="debtorSuggestions" class="autocomplete-suggestions"></div>
+                </div>
+                <button class="btn-small" onclick="addTransaction()">Add</button>
+            </div>
+            
+            <div class="transactions-list">
+                <strong>Transactions (<span id="transactionCount">0</span>):</strong>
+                <div id="transactionsList">
+                    <div class="empty-state">No transactions added yet</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="btn-small" id="processManualBtn" onclick="processManualTransactions()" disabled style="padding: 10px 20px; font-size: 16px;">
+                    Process Manual Transactions
+                </button>
+            </div>
+            
+            <p style="font-size: 13px; color: #666; margin-top: 10px; text-align: center;">
+                💡 Tip: Use Tab to move between fields, Enter to add quickly
+            </p>
+        </div>
+        
+        <!-- Divider -->
+        <div class="option-divider">
+            <span>OR</span>
+        </div>
         
         <!-- File upload form - sends POST request to /upload route -->
         <form action="/upload" method="post" enctype="multipart/form-data">
@@ -119,5 +401,225 @@ The page includes a file upload form and instructions for the expected CSV forma
             <p>SplitUp will analyze all transactions and show you the minimum number of payments needed to settle all debts.</p>
         </div>
     </div>
+
+    <script>
+        let manualTransactions = [];
+        let allNames = new Set();
+        
+        // Theme management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const themeToggle = document.getElementById('themeToggle');
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            if (newTheme === 'light') {
+                themeToggle.innerHTML = '🌙 Dark Mode';
+            } else {
+                themeToggle.innerHTML = '🌞 Light Mode';
+            }
+        }
+        
+        // Initialize theme on page load
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeToggle = document.getElementById('themeToggle');
+            
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = '🌙 Dark Mode';
+            } else {
+                // Default to dark mode
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '🌞 Light Mode';
+            }
+        }
+
+        // Focus on first input when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            document.getElementById('payerInput').focus();
+        });
+
+        // Handle Enter key to add transaction
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTransaction();
+            }
+        });
+
+        // Handle Tab key navigation
+        document.getElementById('payerInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                document.getElementById('amountInput').focus();
+            }
+        });
+
+        document.getElementById('amountInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                document.getElementById('debtorInput').focus();
+            }
+        });
+
+        // Autocomplete functionality
+        function setupAutocomplete(inputId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                suggestions.innerHTML = '';
+                
+                if (value.length > 0) {
+                    const matches = Array.from(allNames).filter(name => 
+                        name.toLowerCase().includes(value)
+                    );
+                    
+                    if (matches.length > 0) {
+                        matches.slice(0, 5).forEach(name => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-suggestion';
+                            div.textContent = name;
+                            div.onclick = function() {
+                                input.value = name;
+                                suggestions.innerHTML = '';
+                            };
+                            suggestions.appendChild(div);
+                        });
+                    }
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.innerHTML = '';
+                }
+            });
+        }
+
+        setupAutocomplete('payerInput', 'payerSuggestions');
+        setupAutocomplete('debtorInput', 'debtorSuggestions');
+
+        function addTransaction() {
+            const payer = document.getElementById('payerInput').value.trim();
+            const debtor = document.getElementById('debtorInput').value.trim();
+            const amount = parseFloat(document.getElementById('amountInput').value);
+
+            // Clear error message
+            document.getElementById('errorMessage').style.display = 'none';
+
+            // Validation
+            if (!payer || !debtor || !amount || amount <= 0) {
+                showError('Please fill in all fields with valid values');
+                return;
+            }
+
+            if (payer.toLowerCase() === debtor.toLowerCase()) {
+                showError('Payer and debtor cannot be the same person');
+                return;
+            }
+
+            // Add to transactions
+            manualTransactions.push({
+                payer: payer,
+                debtor: debtor,
+                amount: amount
+            });
+
+            // Add names to autocomplete
+            allNames.add(payer);
+            allNames.add(debtor);
+
+            // Clear form
+            document.getElementById('payerInput').value = '';
+            document.getElementById('debtorInput').value = '';
+            document.getElementById('amountInput').value = '';
+
+            // Update display
+            updateTransactionsList();
+            
+            // Focus back to first input for quick entry
+            document.getElementById('payerInput').focus();
+        }
+
+        function removeTransaction(index) {
+            manualTransactions.splice(index, 1);
+            updateTransactionsList();
+        }
+
+        function updateTransactionsList() {
+            const list = document.getElementById('transactionsList');
+            const count = document.getElementById('transactionCount');
+            const processBtn = document.getElementById('processManualBtn');
+
+            count.textContent = manualTransactions.length;
+
+            if (manualTransactions.length === 0) {
+                list.innerHTML = '<div class="empty-state">No transactions added yet</div>';
+                processBtn.disabled = true;
+            } else {
+                list.innerHTML = manualTransactions.map((t, index) => `
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <strong>${t.payer}</strong> paid $${t.amount.toFixed(2)} to <strong>${t.debtor}</strong>
+                        </div>
+                        <button class="btn-danger" onclick="removeTransaction(${index})">×</button>
+                    </div>
+                `).join('');
+                processBtn.disabled = false;
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function processManualTransactions() {
+            if (manualTransactions.length === 0) return;
+
+            // Show loading state
+            const processBtn = document.getElementById('processManualBtn');
+            const originalText = processBtn.textContent;
+            processBtn.textContent = 'Processing...';
+            processBtn.disabled = true;
+
+            // Send to server
+            fetch('/process_manual', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    transactions: manualTransactions
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Processing failed');
+                }
+            })
+            .then(html => {
+                // Replace current page with results
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => {
+                showError('Error processing transactions. Please try again.');
+                processBtn.textContent = originalText;
+                processBtn.disabled = false;
+            });
+        }
+    </script>
 </body>
 </html>
