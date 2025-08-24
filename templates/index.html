@@ -253,6 +253,13 @@ The page includes a file upload form and instructions for the expected CSV forma
             flex: 1;
         }
 
+        .split-info {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 4px;
+        }
+
         .autocomplete-suggestions {
             position: absolute;
             background: var(--bg-secondary);
@@ -395,7 +402,7 @@ The page includes a file upload form and instructions for the expected CSV forma
         .btn-clear:hover {
             background-color: var(--accent-red-hover);
         }
-        
+
         /* File management styles */
         .file-item {
             background-color: var(--bg-secondary);
@@ -408,23 +415,23 @@ The page includes a file upload form and instructions for the expected CSV forma
             align-items: center;
             transition: all 0.3s ease;
         }
-        
+
         .file-info {
             flex: 1;
             color: var(--text-primary);
         }
-        
+
         .file-name {
             font-weight: bold;
             color: var(--accent-blue);
         }
-        
+
         .file-stats {
             font-size: 12px;
             color: var(--text-muted);
             margin-top: 2px;
         }
-        
+
         .btn-file-remove {
             background-color: var(--accent-red);
             color: white;
@@ -435,9 +442,25 @@ The page includes a file upload form and instructions for the expected CSV forma
             font-size: 12px;
             transition: background-color 0.3s ease;
         }
-        
+
         .btn-file-remove:hover {
             background-color: var(--accent-red-hover);
+        }
+        
+        /* Multiple debtor styles */
+        .debtor-entry {
+            margin-bottom: 5px;
+        }
+        
+        .debtor-amount {
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .btn-small.btn-danger {
+            padding: 2px 6px;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -450,78 +473,114 @@ The page includes a file upload form and instructions for the expected CSV forma
     <div class="container">
         <!-- Main page title -->
         <h1>SplitUp - Debt Simplifier</h1>
+        <p><i>SplitUp will show you the minimum number of payments needed to settle all debts.</i></p>
 
-        <!-- Instructions section explaining CSV format requirements -->
-        <div class="info">
-            <h3>CSV Format</h3>
-            <p>Your CSV file should have the following format (one transaction per line):</p>
-            <!-- Shows the expected CSV format pattern -->
-            <code>payer,debtor,amount</code>
-            <p><strong>Example:</strong></p>
-            <!-- Example transactions showing real data format -->
-            <code>Alice,Bob,25.50<br>
-            Bob,Charlie,15.00<br>
-            Charlie,Alice,30.75</code>
-            <p>SplitUp will analyze all transactions and show you the minimum number of payments needed to settle all debts.</p>
-        </div>
-
-        <!-- CSV Upload Section -->
-        <div class="upload-section">
-            <h3>📂 Upload CSV Files (Optional)</h3>
-            <p>Upload one or more CSV files to load existing transactions</p>
-            <input type="file" id="csvInput" accept=".csv" multiple onchange="loadCSV()">
-            <div class="error-message" id="csvErrorMessage"></div>
-            
-            <!-- Uploaded Files List -->
-            <div id="uploadedFilesList" style="margin-top: 15px; display: none;">
-                <h4 style="margin-bottom: 10px; color: var(--text-primary);">Uploaded Files:</h4>
-                <div id="filesContainer"></div>
+        <!-- CSV Upload and Format Guide Section -->
+        <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+            <!-- CSV Format Guide (Left) -->
+            <div class="info" style="flex: 1; min-width: 300px;">
+                <h3>CSV Format</h3>
+                <p>Your CSV file should have the following format (one transaction per line):</p>
+                <!-- Shows the expected CSV format pattern -->
+                <code>payer,debtor,amount</code>
+                <p><strong>Example:</strong></p>
+                <!-- Example transactions showing real data format -->
+                <code>Alice,Bob,25.50<br>
+                Bob,Charlie,15.00<br>
+                Charlie,Alice,30.75</code>
             </div>
-        </div>
 
-        <!-- Manual Input Section -->
-        <div class="manual-section">
-            <h3>📝 Add Transactions</h3>
-            <div class="error-message" id="errorMessage"></div>
+            <!-- CSV Upload Section (Right) -->
+            <div class="upload-section" style="flex: 1; min-width: 300px;">
+                <h3>📂 Upload CSV Files (Optional)</h3>
+                <p>Upload one or more CSV files to load existing transactions</p>
+                <input type="file" id="csvInput" accept=".csv" multiple onchange="loadCSV()">
+                <div class="error-message" id="csvErrorMessage"></div>
 
-            <div class="form-group">
-                <div class="input-container">
-                    <input type="text" id="payerInput" placeholder="Who paid?" autocomplete="off">
-                    <div id="payerSuggestions" class="autocomplete-suggestions"></div>
+                <!-- Uploaded Files List -->
+                <div id="uploadedFilesList" style="margin-top: 15px; display: none;">
+                    <h4 style="margin-bottom: 10px; color: var(--text-primary);">Uploaded Files:</h4>
+                    <div id="filesContainer"></div>
                 </div>
-                <span>paid $</span>
-                <input type="number" id="amountInput" placeholder="0.00" step="0.01" min="0">
-                <span>to</span>
-                <div class="input-container">
-                    <input type="text" id="debtorInput" placeholder="Who received?" autocomplete="off">
-                    <div id="debtorSuggestions" class="autocomplete-suggestions"></div>
+            </div>
+        </div>
+
+        <!-- Main Content Layout: Left Controls, Right Transactions -->
+        <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+            <!-- Left Side: Manual Input and Process Button -->
+            <div style="flex: 1; min-width: 400px;">
+                <!-- Manual Input Section -->
+                <div class="manual-section">
+                    <h3>📝 Add Transactions</h3>
+                    <div class="error-message" id="errorMessage"></div>
+
+                    <!-- Payer and Amount -->
+                    <div class="form-group">
+                        <div class="input-container">
+                            <input type="text" id="payerInput" placeholder="Who paid?" autocomplete="off">
+                            <div id="payerSuggestions" class="autocomplete-suggestions"></div>
+                        </div>
+                        <span>paid $</span>
+                        <input type="number" id="amountInput" placeholder="0.00" step="0.01" min="0" onchange="updateDebtorAmounts()">
+                        <span>split among:</span>
+                    </div>
+                    
+                    <!-- Dynamic Debtor List -->
+                    <div id="debtorsList">
+                        <div class="debtor-entry" data-index="0">
+                            <div class="form-group" style="margin-bottom: 8px;">
+                                <div class="input-container" style="flex: 2;">
+                                    <input type="text" class="debtor-name" placeholder="Who received?" autocomplete="off">
+                                </div>
+                                <span style="min-width: 40px;">gets</span>
+                                <input type="number" class="debtor-percentage" placeholder="%" step="0.1" min="0" max="100" style="width: 70px;" onchange="updateDebtorAmounts()">
+                                <span style="min-width: 15px;">%</span>
+                                <span class="debtor-amount" style="min-width: 80px; font-weight: bold; color: var(--accent-green);">$0.00</span>
+                                <button class="btn-danger btn-small" onclick="removeDebtor(0)" style="margin-left: 8px; display: none;">×</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 10px 0; display: flex; justify-content: space-between; align-items: center;">
+                        <button class="btn-small" onclick="addDebtor()" style="background-color: var(--accent-blue);">+ Add Another Debtor</button>
+                        <div>
+                            <span id="totalPercentage" style="font-weight: bold; color: var(--text-primary);">Total: 0%</span>
+                            <button class="btn-small" onclick="autoFillPercentages()" style="margin-left: 10px; background-color: var(--text-muted);">Equal Split</button>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="btn-small" onclick="addTransaction()" id="addTransactionBtn" disabled>Add Transaction(s)</button>
+                    </div>
+
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 10px 0; text-align: center;">
+                        💡 Tip: Add percentages to split payment among multiple people, or leave one person at 100%
+                    </p>
                 </div>
-                <button class="btn-small" onclick="addTransaction()">Add</button>
+
+                <!-- Single Process Button -->
+                <div class="process-section">
+                    <button class="btn-success" id="processAllBtn" onclick="processAllTransactions()" disabled>
+                        🚀 Process All Transactions
+                    </button>
+                </div>
             </div>
 
-            <p style="font-size: 13px; color: var(--text-muted); margin: 10px 0; text-align: center;">
-                💡 Tip: Use Tab to move between fields, Enter to add quickly
-            </p>
-        </div>
-
-        <!-- Combined Transactions List -->
-        <div class="transactions-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0;">All Transactions (<span id="transactionCount">0</span>)</h3>
-                <button class="btn-clear" id="clearAllBtn" onclick="clearAllTransactions()" style="display: none;">
-                    🗑️ Clear All
-                </button>
+            <!-- Right Side: Transactions List -->
+            <div style="flex: 1; min-width: 400px;">
+                <!-- Combined Transactions List -->
+                <div class="transactions-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;">All Transactions (<span id="transactionCount">0</span>)</h3>
+                        <button class="btn-clear" id="clearAllBtn" onclick="clearAllTransactions()" style="display: none;">
+                            🗑️ Clear All
+                        </button>
+                    </div>
+                    <div id="transactionsList">
+                        <div class="empty-state">No transactions added yet. Upload a CSV file or add transactions manually.</div>
+                    </div>
+                </div>
             </div>
-            <div id="transactionsList">
-                <div class="empty-state">No transactions added yet. Upload a CSV file or add transactions manually.</div>
-            </div>
-        </div>
-
-        <!-- Single Process Button -->
-        <div class="process-section">
-            <button class="btn-success" id="processAllBtn" onclick="processAllTransactions()" disabled>
-                🚀 Process All Transactions
-            </button>
         </div>
 
     </div>
@@ -629,7 +688,166 @@ The page includes a file upload form and instructions for the expected CSV forma
         }
 
         setupAutocomplete('payerInput', 'payerSuggestions');
-        setupAutocomplete('debtorInput', 'debtorSuggestions');
+        
+        // Set up autocomplete for initial debtor
+        setupAutocompleteForDebtor(0);
+
+        // Multiple debtor functionality
+        let debtorCount = 1;
+
+        function setupAutocompleteForDebtor(index) {
+            const debtorInput = document.querySelector(`.debtor-entry[data-index="${index}"] .debtor-name`);
+            if (debtorInput) {
+                setupAutocompleteForElement(debtorInput, `debtor-suggestions-${index}`);
+            }
+        }
+
+        function setupAutocompleteForElement(input, suggestionsId) {
+            // Create suggestions div if it doesn't exist
+            let suggestions = document.getElementById(suggestionsId);
+            if (!suggestions) {
+                suggestions = document.createElement('div');
+                suggestions.id = suggestionsId;
+                suggestions.className = 'autocomplete-suggestions';
+                input.parentNode.appendChild(suggestions);
+            }
+
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                suggestions.innerHTML = '';
+                
+                if (value.length > 0) {
+                    const matches = Array.from(allNames).filter(name => 
+                        name.toLowerCase().includes(value)
+                    );
+                    
+                    if (matches.length > 0) {
+                        matches.slice(0, 5).forEach(name => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-suggestion';
+                            div.textContent = name;
+                            div.onclick = function() {
+                                input.value = name;
+                                suggestions.innerHTML = '';
+                            };
+                            suggestions.appendChild(div);
+                        });
+                    }
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.innerHTML = '';
+                }
+            });
+        }
+
+        function addDebtor() {
+            const debtorsList = document.getElementById('debtorsList');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'debtor-entry';
+            newEntry.setAttribute('data-index', debtorCount);
+            
+            newEntry.innerHTML = `
+                <div class="form-group" style="margin-bottom: 8px;">
+                    <div class="input-container" style="flex: 2;">
+                        <input type="text" class="debtor-name" placeholder="Who received?" autocomplete="off">
+                    </div>
+                    <span style="min-width: 40px;">gets</span>
+                    <input type="number" class="debtor-percentage" placeholder="%" step="0.1" min="0" max="100" style="width: 70px;" onchange="updateDebtorAmounts()">
+                    <span style="min-width: 15px;">%</span>
+                    <span class="debtor-amount" style="min-width: 80px; font-weight: bold; color: var(--accent-green);">$0.00</span>
+                    <button class="btn-danger btn-small" onclick="removeDebtor(${debtorCount})" style="margin-left: 8px;">×</button>
+                </div>
+            `;
+            
+            debtorsList.appendChild(newEntry);
+            setupAutocompleteForDebtor(debtorCount);
+            debtorCount++;
+            
+            // Show remove buttons when there's more than one debtor
+            updateRemoveButtons();
+        }
+
+        function removeDebtor(index) {
+            const entry = document.querySelector(`.debtor-entry[data-index="${index}"]`);
+            if (entry) {
+                entry.remove();
+                updateDebtorAmounts();
+                updateRemoveButtons();
+            }
+        }
+
+        function updateRemoveButtons() {
+            const entries = document.querySelectorAll('.debtor-entry');
+            entries.forEach((entry, index) => {
+                const removeBtn = entry.querySelector('.btn-danger');
+                if (entries.length > 1) {
+                    removeBtn.style.display = 'inline-block';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
+            });
+        }
+
+        function updateDebtorAmounts() {
+            const totalAmount = parseFloat(document.getElementById('amountInput').value) || 0;
+            const debtorEntries = document.querySelectorAll('.debtor-entry');
+            let totalPercentage = 0;
+            
+            debtorEntries.forEach(entry => {
+                const percentageInput = entry.querySelector('.debtor-percentage');
+                const amountSpan = entry.querySelector('.debtor-amount');
+                const percentage = parseFloat(percentageInput.value) || 0;
+                const amount = (totalAmount * percentage) / 100;
+                
+                amountSpan.textContent = `$${amount.toFixed(2)}`;
+                totalPercentage += percentage;
+            });
+            
+            // Update total percentage display
+            const totalPercentageSpan = document.getElementById('totalPercentage');
+            totalPercentageSpan.textContent = `Total: ${totalPercentage.toFixed(1)}%`;
+            
+            // Color code the percentage
+            if (totalPercentage === 100) {
+                totalPercentageSpan.style.color = 'var(--accent-green)';
+            } else if (totalPercentage > 100) {
+                totalPercentageSpan.style.color = 'var(--accent-red)';
+            } else {
+                totalPercentageSpan.style.color = 'var(--text-muted)';
+            }
+            
+            // Enable/disable add button
+            const addBtn = document.getElementById('addTransactionBtn');
+            const payer = document.getElementById('payerInput').value.trim();
+            const hasValidDebtors = Array.from(debtorEntries).some(entry => {
+                const name = entry.querySelector('.debtor-name').value.trim();
+                const percentage = parseFloat(entry.querySelector('.debtor-percentage').value) || 0;
+                return name && percentage > 0;
+            });
+            
+            addBtn.disabled = !(payer && totalAmount > 0 && hasValidDebtors && totalPercentage <= 100);
+        }
+
+        function autoFillPercentages() {
+            const debtorEntries = document.querySelectorAll('.debtor-entry');
+            const validEntries = Array.from(debtorEntries).filter(entry => {
+                return entry.querySelector('.debtor-name').value.trim();
+            });
+            
+            if (validEntries.length === 0) return;
+            
+            const percentagePerDebtor = 100 / validEntries.length;
+            validEntries.forEach(entry => {
+                const percentageInput = entry.querySelector('.debtor-percentage');
+                percentageInput.value = percentagePerDebtor.toFixed(1);
+            });
+            
+            updateDebtorAmounts();
+        }
 
         // CSV loading functionality for multiple files
         function loadCSV() {
@@ -682,19 +900,19 @@ The page includes a file upload form and instructions for the expected CSV forma
                         if (csvTransactions.length > 0) {
                             // Add transactions to the main array
                             allTransactions.push(...csvTransactions);
-                            
+
                             // Track the uploaded file
                             uploadedFiles.set(file.name, csvTransactions.length);
-                            
+
                             // Update displays
                             updateTransactionsList();
                             updateUploadedFilesList();
-                            
+
                             document.getElementById('csvErrorMessage').style.display = 'none';
                         } else {
                             showCSVError(`No valid transactions found in "${file.name}".`);
                         }
-                        
+
                     } catch (error) {
                         showCSVError(`Error reading "${file.name}". Please check the format.`);
                     }
@@ -714,15 +932,15 @@ The page includes a file upload form and instructions for the expected CSV forma
         function updateUploadedFilesList() {
             const filesList = document.getElementById('uploadedFilesList');
             const filesContainer = document.getElementById('filesContainer');
-            
+
             if (uploadedFiles.size === 0) {
                 filesList.style.display = 'none';
                 return;
             }
-            
+
             filesList.style.display = 'block';
             filesContainer.innerHTML = '';
-            
+
             uploadedFiles.forEach((transactionCount, filename) => {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'file-item';
@@ -742,14 +960,14 @@ The page includes a file upload form and instructions for the expected CSV forma
             if (confirm(`Remove all transactions from "${filename}"?`)) {
                 // Remove transactions from the specific file
                 allTransactions = allTransactions.filter(t => t.filename !== filename);
-                
+
                 // Remove file from tracking
                 uploadedFiles.delete(filename);
-                
+
                 // Update displays
                 updateTransactionsList();
                 updateUploadedFilesList();
-                
+
                 // Clear file input if no files remain
                 if (uploadedFiles.size === 0) {
                     document.getElementById('csvInput').value = '';
@@ -759,45 +977,98 @@ The page includes a file upload form and instructions for the expected CSV forma
 
         function addTransaction() {
             const payer = document.getElementById('payerInput').value.trim();
-            const debtor = document.getElementById('debtorInput').value.trim();
-            const amount = parseFloat(document.getElementById('amountInput').value);
+            const totalAmount = parseFloat(document.getElementById('amountInput').value);
+            const debtorEntries = document.querySelectorAll('.debtor-entry');
 
             // Clear error message
             document.getElementById('errorMessage').style.display = 'none';
 
             // Validation
-            if (!payer || !debtor || !amount || amount <= 0) {
-                showError('Please fill in all fields with valid values');
+            if (!payer || !totalAmount || totalAmount <= 0) {
+                showError('Please fill in payer and total amount');
                 return;
             }
 
-            if (payer.toLowerCase() === debtor.toLowerCase()) {
-                showError('Payer and debtor cannot be the same person');
-                return;
-            }
-
-            // Add to transactions
-            allTransactions.push({
-                payer: payer,
-                debtor: debtor,
-                amount: amount,
-                source: 'manual'
+            // Get valid debtors with percentages
+            const validDebtors = [];
+            let totalPercentage = 0;
+            
+            debtorEntries.forEach(entry => {
+                const name = entry.querySelector('.debtor-name').value.trim();
+                const percentage = parseFloat(entry.querySelector('.debtor-percentage').value) || 0;
+                
+                if (name && percentage > 0) {
+                    if (name.toLowerCase() === payer.toLowerCase()) {
+                        showError('Payer cannot owe money to themselves');
+                        return;
+                    }
+                    validDebtors.push({ name, percentage });
+                    totalPercentage += percentage;
+                }
             });
 
-            // Add names to autocomplete
-            allNames.add(payer);
-            allNames.add(debtor);
+            if (validDebtors.length === 0) {
+                showError('Please add at least one debtor with a valid percentage');
+                return;
+            }
+
+            if (totalPercentage > 100) {
+                showError('Total percentages cannot exceed 100%');
+                return;
+            }
+
+            // Create individual transactions for each debtor
+            validDebtors.forEach(debtor => {
+                const debtorAmount = (totalAmount * debtor.percentage) / 100;
+                
+                allTransactions.push({
+                    payer: payer,
+                    debtor: debtor.name,
+                    amount: debtorAmount,
+                    source: 'manual',
+                    splitInfo: validDebtors.length > 1 ? `${debtor.percentage}% of $${totalAmount.toFixed(2)}` : null
+                });
+
+                // Add names to autocomplete
+                allNames.add(payer);
+                allNames.add(debtor.name);
+            });
 
             // Clear form
-            document.getElementById('payerInput').value = '';
-            document.getElementById('debtorInput').value = '';
-            document.getElementById('amountInput').value = '';
+            clearTransactionForm();
 
             // Update display
             updateTransactionsList();
 
             // Focus back to first input for quick entry
             document.getElementById('payerInput').focus();
+        }
+
+        function clearTransactionForm() {
+            // Clear main inputs
+            document.getElementById('payerInput').value = '';
+            document.getElementById('amountInput').value = '';
+            
+            // Reset debtors list to single entry
+            const debtorsList = document.getElementById('debtorsList');
+            debtorsList.innerHTML = `
+                <div class="debtor-entry" data-index="0">
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <div class="input-container" style="flex: 2;">
+                            <input type="text" class="debtor-name" placeholder="Who received?" autocomplete="off" oninput="setupAutocomplete(this); updateDebtorAmounts()">
+                            <div class="autocomplete-dropdown"></div>
+                        </div>
+                        <span style="min-width: 40px;">gets</span>
+                        <input type="number" class="debtor-percentage" placeholder="%" step="0.1" min="0" max="100" style="width: 70px;" onchange="updateDebtorAmounts()">
+                        <span style="min-width: 15px;">%</span>
+                        <span class="debtor-amount" style="min-width: 80px; font-weight: bold; color: var(--accent-green);">$0.00</span>
+                        <button class="btn-danger btn-small" onclick="removeDebtor(0)" style="margin-left: 8px; display: none;">×</button>
+                    </div>
+                </div>
+            `;
+            
+            // Update amounts and button state
+            updateDebtorAmounts();
         }
 
         function removeTransaction(index) {
@@ -825,11 +1096,14 @@ The page includes a file upload form and instructions for the expected CSV forma
                     } else {
                         sourceLabel = '✏️ Manual';
                     }
+
+                    const splitInfoDisplay = t.splitInfo ? `<div class="split-info">Split payment: ${t.splitInfo}</div>` : '';
                     
                     return `
                         <div class="transaction-item">
                             <div class="transaction-info">
                                 <strong>${t.payer}</strong> paid $${t.amount.toFixed(2)} to <strong>${t.debtor}</strong>
+                                ${splitInfoDisplay}
                                 <span class="transaction-source">${sourceLabel}</span>
                             </div>
                             <button class="btn-danger" onclick="removeTransaction(${index})">×</button>
@@ -846,7 +1120,7 @@ The page includes a file upload form and instructions for the expected CSV forma
                 allTransactions = [];
                 allNames.clear();
                 uploadedFiles.clear(); // Clear uploaded files tracking
-                
+
                 updateTransactionsList();
                 updateUploadedFilesList(); // Update files list display
 
