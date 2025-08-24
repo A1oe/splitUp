@@ -1,0 +1,653 @@
+/* CSS Variables for theming */
+:root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3a3a3a;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-muted: #999999;
+    --border-color: #555555;
+    --accent-blue: #4a9eff;
+    --accent-blue-hover: #357abd;
+    --accent-green: #4ade80;
+    --accent-green-hover: #22c55e;
+    --accent-red: #ef4444;
+    --accent-red-hover: #dc2626;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --info-bg: #1e3a5f;
+    --error-bg: #5c1e1e;
+    --error-text: #fca5a5;
+    --stats-bg: #1a3d2e;
+    --transaction-bg: #2a2a2a;
+    --person-details-bg: #3d3d1a;
+    --no-transactions-bg: #1a3d2e;
+    --no-transactions-text: #4ade80;
+    --no-transactions-border: #22c55e;
+}
+
+/* Light theme variables */
+[data-theme="light"] {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f8f9fa;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --text-muted: #6c757d;
+    --border-color: #dddddd;
+    --accent-blue: #007bff;
+    --accent-blue-hover: #0056b3;
+    --accent-green: #28a745;
+    --accent-green-hover: #218838;
+    --accent-red: #dc3545;
+    --accent-red-hover: #c82333;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --info-bg: #e7f3ff;
+    --error-bg: #f8d7da;
+    --error-text: #721c24;
+    --stats-bg: #e8f5e8;
+    --transaction-bg: #f8f9fa;
+    --person-details-bg: #fff3cd;
+    --no-transactions-bg: #d4edda;
+    --no-transactions-text: #155724;
+    --no-transactions-border: #c3e6cb;
+}
+
+/* Main page layout and typography */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    background-color: var(--accent-blue);
+    transform: scale(1.05);
+}
+
+/* Container box with shadow for main content */
+.container {
+    background-color: var(--bg-secondary);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px var(--shadow);
+    transition: background-color 0.3s ease;
+}
+
+/* Main heading styling */
+h1, h2 {
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Primary button styling */
+button {
+    background-color: var(--accent-blue);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+button:hover {
+    background-color: var(--accent-blue-hover);
+}
+
+/* Button variants */
+.btn-small {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: var(--accent-green);
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.btn-small:hover {
+    background-color: var(--accent-green-hover);
+}
+
+.btn-success {
+    background-color: var(--accent-green);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px var(--shadow);
+}
+
+.btn-success:hover {
+    background-color: var(--accent-green-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px var(--shadow);
+}
+
+.btn-success:disabled {
+    background-color: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-danger {
+    background-color: var(--accent-red);
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: var(--accent-red-hover);
+}
+
+.btn-clear {
+    background-color: var(--accent-red);
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-clear:hover {
+    background-color: var(--accent-red-hover);
+}
+
+/* Back button styling */
+.back-button {
+    background-color: var(--text-muted);
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: var(--accent-blue);
+    text-decoration: none;
+    color: white;
+}
+
+/* Form elements */
+.form-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.form-group input {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 5px rgba(74, 222, 128, 0.3);
+}
+
+input[type="file"] {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+/* Input containers and autocomplete */
+.input-container {
+    position: relative;
+}
+
+.autocomplete-suggestions {
+    position: absolute;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: 100%;
+    border-radius: 0 0 5px 5px;
+}
+
+.autocomplete-suggestion {
+    padding: 8px;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: background-color 0.3s ease;
+}
+
+.autocomplete-suggestion:hover {
+    background-color: var(--bg-tertiary);
+}
+
+/* Transaction display */
+.transaction-item {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.transaction-info {
+    flex: 1;
+}
+
+.transaction {
+    background-color: var(--transaction-bg);
+    color: var(--text-primary);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border-left: 4px solid var(--accent-blue);
+    transition: background-color 0.3s ease;
+}
+
+.transaction strong {
+    color: var(--accent-blue);
+}
+
+.transaction-source {
+    font-size: 11px;
+    background-color: var(--accent-blue);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: normal;
+}
+
+.split-info {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 4px;
+}
+
+/* Sections and layouts */
+.upload-section {
+    border: 2px dashed var(--border-color);
+    padding: 30px;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.upload-section:hover {
+    border-color: var(--accent-blue);
+    background-color: var(--bg-tertiary);
+}
+
+.manual-section {
+    border: 2px solid var(--accent-green);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background-color: var(--bg-tertiary);
+    transition: background-color 0.3s ease;
+}
+
+.transactions-section {
+    border: 2px solid var(--accent-blue);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    background-color: var(--bg-tertiary);
+    transition: background-color 0.3s ease;
+}
+
+.transactions-section h3 {
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.process-section {
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+/* Statistics and status boxes */
+.stats {
+    background-color: var(--stats-bg);
+    color: var(--text-primary);
+    padding: 15px;
+    border-radius: 5px;
+    margin: 20px 0;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.info {
+    background-color: var(--info-bg);
+    color: var(--text-secondary);
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.info h3 {
+    margin-top: 0;
+    color: var(--accent-blue);
+}
+
+.no-transactions {
+    background-color: var(--no-transactions-bg);
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    color: var(--no-transactions-text);
+    border: 1px solid var(--no-transactions-border);
+    transition: background-color 0.3s ease;
+}
+
+.person-details {
+    background-color: var(--person-details-bg);
+    color: var(--text-primary);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 3px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+/* Messages and states */
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 15px;
+}
+
+.error-message {
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+/* Dividers and separators */
+.option-divider {
+    text-align: center;
+    margin: 30px 0;
+    position: relative;
+}
+
+.option-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.option-divider span {
+    background: var(--bg-primary);
+    padding: 0 20px;
+    color: var(--text-muted);
+    font-weight: bold;
+}
+
+/* File management */
+.file-item {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.file-info {
+    flex: 1;
+    color: var(--text-primary);
+}
+
+.file-name {
+    font-weight: bold;
+    color: var(--accent-blue);
+}
+
+.file-stats {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.btn-file-remove {
+    background-color: var(--accent-red);
+    color: white;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-file-remove:hover {
+    background-color: var(--accent-red-hover);
+}
+
+/* Multiple debtor styles (index page specific) */
+.debtor-entry {
+    margin-bottom: 5px;
+}
+
+.debtor-amount {
+    color: var(--accent-green);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-small.btn-danger {
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+/* Specific input field sizing */
+#payerInput, #debtorInput {
+    flex: 1;
+    min-width: 120px;
+}
+
+#amountInput {
+    width: 100px;
+}
+
+/* Collapsible sections (results page specific) */
+.collapsible-header {
+    cursor: pointer;
+    padding: 10px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-radius: 5px;
+    margin: 10px 0;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.collapsible-header:hover {
+    background-color: var(--accent-blue);
+}
+
+.collapsible-content {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.collapsible-content.show {
+    display: block;
+}
+
+.collapse-arrow {
+    transition: transform 0.3s ease;
+}
+
+.collapse-arrow.expanded {
+    transform: rotate(90deg);
+}
+
+/* Original transactions list styling */
+.original-transactions-list {
+    background-color: var(--transaction-bg);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.original-transaction-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.original-transaction-item:last-child {
+    border-bottom: none;
+}
+
+.original-transaction-item strong {
+    color: var(--accent-blue);
+}
+
+/* Debt Network Visualization Styles */
+.debt-network-container {
+    background-color: var(--bg-tertiary);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+#debtNetworkSvg {
+    width: 100%;
+    height: auto;
+    max-height: 600px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-secondary);
+}
+
+/* SVG Node Styles */
+.person-node {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.person-node:hover {
+    transform: scale(1.1);
+}
+
+.person-circle {
+    fill: var(--accent-blue);
+    stroke: var(--bg-secondary);
+    stroke-width: 3;
+}
+
+.person-text {
+    fill: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+/* SVG Arrow Styles */
+.debt-arrow {
+    stroke: var(--accent-red);
+    stroke-width: 2;
+    fill: none;
+    marker-end: url(#arrowhead);
+}
+
+.debt-amount-text {
+    fill: var(--text-primary);
+    font-size: 12px;
+    text-anchor: middle;
+    font-weight: bold;
+}
+
+.debt-amount-bg {
+    fill: var(--bg-secondary);
+    stroke: var(--border-color);
+    stroke-width: 1;
+}
+
+/* Legend */
+.network-legend {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: var(--bg-secondary);
+    border-radius: 5px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}

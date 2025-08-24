@@ -3,8 +3,12 @@ import itertools
 import glob
 import json
 import io
+from collections import namedtuple
 
 from itertools import *
+
+# Named Tuple definition for transaction data
+Transaction = namedtuple('Transaction', ['debtor', 'creditor', 'amount'])
 # TODO: Add currency converter functionality later
 
 
@@ -155,7 +159,6 @@ def readDataFromUpload(file_stream):
     content = file_stream.read().decode('utf-8')
     csv_file = io.StringIO(content)
     spamreader = csv.reader(csv_file, delimiter=' ', quotechar='|')
-    numTransactions = 0
 
     for item in spamreader:
         line = item[0].split(",")
@@ -164,11 +167,11 @@ def readDataFromUpload(file_stream):
         amount = float(line[2])
 
         # Store original transaction for display
-        original_transactions.append({
-            'payer': payer,
-            'debtor': debtor,
-            'amount': amount
-        })
+        original_transactions.append(Transaction(
+            debtor=debtor,
+            creditor=payer,
+            amount=amount
+        ))
 
         # make PersonNodes for each person
         if not (payer in people):
@@ -176,11 +179,10 @@ def readDataFromUpload(file_stream):
         if not (debtor in people):
             people[debtor] = PersonNode(debtor)
 
-        numTransactions += 1
         people[payer].addDebt(people[debtor], amount)
 
     allGroups = splitUpGroups(list(people.values()))
-    return allGroups, numTransactions, original_transactions
+    return allGroups, original_transactions
 
 def splitUpGroups(people):
     """
@@ -384,7 +386,7 @@ def main():
 if __name__ == '__main__':
     """
     Main function for console-based operation
-    
+
     Can be used for command-line interface for selecting CSV files
     and processing transactions.
     """
