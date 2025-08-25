@@ -125,24 +125,24 @@ def processManual():
         originalTransactions = []
 
         for transaction in transactionsData:
-            payer = transaction['payer'].strip()
             debtor = transaction['debtor'].strip()
+            creditor = transaction['creditor'].strip()
             amount = float(transaction['amount'])
 
             # Store original transaction for display
             originalTransactions.append(Transaction(
                 debtor=debtor,
-                creditor=payer,
+                creditor=creditor,
                 amount=amount
             ))
 
             # Create PersonNodes for each person
-            if payer not in people:
-                people[payer] = PersonNode(payer)
             if debtor not in people:
                 people[debtor] = PersonNode(debtor)
+            if creditor not in people:
+                people[creditor] = PersonNode(creditor)
 
-            people[payer].addDebt(people[debtor], amount)
+            people[creditor].addDebt(people[debtor], amount)
 
         # Process the transactions using existing logic
         allGroups = splitUpGroups(list(people.values()))
@@ -199,7 +199,7 @@ def exportCsv():
     Handles CSV export of combined transactions
 
     Receives JSON data containing transactions and generates a downloadable CSV file
-    with the same format as input CSV files: payer,debtor,amount (no header)
+    with the same format as input CSV files: creditor,debtor,amount (no header)
     """
     try:
         data = request.get_json()
@@ -212,20 +212,20 @@ def exportCsv():
         output = io.StringIO()
         writer = csv.writer(output)
 
-        # Write transaction data (no header, same format as input)
+        # Write transaction data (same format as input)
         for transaction in transactionsData:
             # Handle both dictionary and named tuple formats for backward compatibility
             if hasattr(transaction, '_asdict'):
-                # Named tuple - convert back to payer,debtor,amount format for CSV
+                # Named tuple - convert back to creditor,debtor,amount format for CSV
                 writer.writerow([
-                    getattr(transaction, 'creditor', ''),  # creditor is the payer
+                    getattr(transaction, 'creditor', ''),  # creditor is the creditor
                     getattr(transaction, 'debtor', ''),
                     getattr(transaction, 'amount', 0)
                 ])
             else:
                 # Dictionary (backward compatibility)
                 writer.writerow([
-                    transaction.get('payer', ''),
+                    transaction.get('creditor', ''),
                     transaction.get('debtor', ''),
                     transaction.get('amount', 0)
                 ])
@@ -236,7 +236,7 @@ def exportCsv():
 
         response = make_response(csvContent)
         response.headers['Content-Type'] = 'text/csv'
-        response.headers['Content-Disposition'] = 'attachment; filename=combined_transactions.csv'
+        response.headers['Content-Disposition'] = 'attachment; filename=transactions.csv'
 
         return response
 

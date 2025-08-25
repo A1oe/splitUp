@@ -30,18 +30,16 @@ The page includes a file upload form and instructions for the expected CSV forma
                 <h3>CSV Format</h3>
                 <p>Your CSV file should have the following format (one transaction per line):</p>
                 <!-- Shows the expected CSV format pattern -->
-                <code>payer,debtor,amount</code>
+                <code>creditor,debtor,amount</code>
                 <p><strong>Example:</strong></p>
                 <!-- Example transactions showing real data format -->
-                <code>Alice,Bob,25.50<br>
-                Bob,Charlie,15.00<br>
-                Charlie,Alice,30.75</code>
+                <code>Alice,Bob,25.50</code>
+                <p>This means Alice paid $25.50 for Bob.</p>
             </div>
 
             <!-- CSV Upload Section (Right) -->
             <div class="upload-section" style="flex: 1; min-width: 300px;">
-                <h3>📂 Upload CSV Files (Optional)</h3>
-                <p>Upload one or more CSV files to load existing transactions</p>
+                <h3>📂 Upload CSV Files</h3>
                 <input type="file" id="csvInput" accept=".csv" multiple onchange="loadCSV()">
                 <div class="error-message" id="csvErrorMessage"></div>
 
@@ -57,75 +55,82 @@ The page includes a file upload form and instructions for the expected CSV forma
         <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
             <!-- Left Side: Manual Input and Process Button -->
             <div style="flex: 1; min-width: 400px;">
-                <!-- Manual Input Section -->
+                <!-- Visual Transaction Builder -->
                 <div class="manual-section">
-                    <h3>📝 Add Transactions</h3>
+                    <h3>💳 Create Transaction</h3>
                     <div class="error-message" id="errorMessage"></div>
 
-                    <!-- Payer and Amount -->
-                    <div class="form-group">
-                        <div class="input-container">
-                            <input type="text" id="payerInput" placeholder="Who paid?" autocomplete="off">
-                            <div id="payerSuggestions" class="autocomplete-suggestions"></div>
-                        </div>
-                        <span>paid $</span>
-                        <input type="number" id="amountInput" placeholder="0.00" step="0.01" min="0" onchange="updateDebtorAmounts()">
-                        <span>split among:</span>
+                    <!-- Add Person -->
+                    <div class="confirm-buttons">
+                        <button class="add-person-btn" onclick="showAddPersonModal('any')">+ Add Person</button>
+                        <button class="btn-success" onclick="confirmTransaction()" id="confirmTransactionBtn">✅</button>
+                        <button class="btn-clear" onclick="startOver()">🔄</button>
                     </div>
-                    
-                    <!-- Dynamic Debtor List -->
-                    <div id="debtorsList">
-                        <div class="debtor-entry" data-index="0">
-                            <div class="form-group" style="margin-bottom: 8px;">
-                                <div class="input-container" style="flex: 2;">
-                                    <input type="text" class="debtor-name" placeholder="Who received?" autocomplete="off">
-                                </div>
-                                <span style="min-width: 40px;">gets</span>
-                                <input type="number" class="debtor-percentage" placeholder="%" step="0.1" min="0" max="100" style="width: 70px;" onchange="updateDebtorAmounts()" value="100">
-                                <span style="min-width: 15px;">%</span>
-                                <span class="debtor-amount" style="min-width: 80px; font-weight: bold; color: var(--accent-green);">$0.00</span>
-                                <button class="btn-danger btn-small" onclick="removeDebtor(0)" style="margin-left: 8px; display: none;">×</button>
+
+                    <!-- Step 1: Select creditor -->
+                    <div class="step-section">
+                        <div class="step-header">
+                            <span class="step-number">1</span>
+                            <h4>Who paid?</h4>
+                        </div>
+                        <div id="creditorSelection" class="person-selection">
+                            <div id="creditorChips" class="person-chips"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Select Debtors -->
+                    <div class="step-section" id="debtorStep" style="display: none;">
+                        <div class="step-header">
+                            <span class="step-number">2</span>
+                            <h4>Who owes money?</h4>
+                        </div>
+                        <div id="debtorSelection" class="person-selection">
+                            <div id="debtorChips" class="person-chips"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Enter Amount -->
+                    <div class="step-section" id="amountStep" style="display: none;">
+                        <div class="step-header">
+                            <span class="step-number">3</span>
+                            <h4>How much?</h4>
+                        </div>
+                        <div class="amount-selection">
+                            <div class="custom-amount">
+                                <span>$</span>
+                                <input type="number" id="customAmountInput" placeholder="0.00" step="0.01" min="0" onchange="selectCustomAmount()">
                             </div>
                         </div>
-                    </div>
-                    
-                    <div style="margin: 10px 0; display: flex; justify-content: space-between; align-items: center;">
-                        <button class="btn-small" onclick="addDebtor()" style="background-color: var(--accent-blue);">+ Add Another Debtor</button>
-                        <div>
-                            <span id="totalPercentage" style="font-weight: bold; color: var(--text-primary);">Total: 0%</span>
-                            <button class="btn-small" onclick="autoFillPercentages()" style="margin-left: 10px; background-color: var(--text-muted);">Equal Split</button>
+                        <div class="selected-debtors" id="selectedDebtors" style="display: none;">
+                            <div class="selection-header">
+                                <span class="selection-label">Selected:</span>
+                                <button class="btn-small equal-split-btn" onclick="equalSplit()">⚡ Equal Split</button>
+                            </div>
+                            <div id="selectedDebtorsList" class="selected-debtors-list"></div>
                         </div>
                     </div>
-                    
-                    <div style="text-align: center;">
-                        <button class="btn-small" onclick="addTransaction()" id="addTransactionBtn" disabled>Add Transaction(s)</button>
-                    </div>
-
-                    <p style="font-size: 13px; color: var(--text-muted); margin: 10px 0; text-align: center;">
-                        💡 Tip: Add percentages to split payment among multiple people, or leave one person at 100%
-                    </p>
-                </div>
-
-                <!-- Process and Export Buttons -->
-                <div class="process-section" style="display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                    <button class="btn-success" id="processAllBtn" onclick="processAllTransactions()" disabled>
-                        🚀 Process All Transactions
-                    </button>
-                    <button class="btn-success" id="exportBtn" onclick="exportTransactionsCSV()" style="display: none; background-color: var(--accent-green);">
-                        📊 Export CSV
-                    </button>
                 </div>
             </div>
 
-            <!-- Right Side: Transactions List -->
+            <!-- Transactions List -->
             <div style="flex: 1; min-width: 400px;">
                 <!-- Combined Transactions List -->
                 <div class="transactions-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                        <h3 style="margin: 0;">All Transactions (<span id="transactionCount">0</span>)</h3>
-                        <button class="btn-clear" id="clearAllBtn" onclick="clearAllTransactions()" style="display: none;">
-                            🗑️ Clear All
-                        </button>
+                        <!-- Process and Export Buttons -->
+                        <div class="process-section" style="display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                            <h3 style="margin: 0;">All Transactions (<span id="transactionCount">0</span>)</h3>
+
+                            <button class="btn-success" id="processAllBtn" onclick="processAllTransactions()" disabled>
+                                🚀 Simplify
+                            </button>
+                            <button class="btn-success" id="exportBtn" onclick="exportTransactionsCSV()" style="display: none; background-color: var(--accent-green);">
+                                📊 Export CSV
+                            </button>
+                            <button class="btn-clear" id="clearAllBtn" onclick="clearAllTransactions()" style="display: none;">
+                                🗑️ Clear
+                            </button>
+                        </div>
                     </div>
                     <div id="transactionsList">
                         <div class="empty-state">No transactions added yet. Upload a CSV file or add transactions manually.</div>
@@ -134,6 +139,23 @@ The page includes a file upload form and instructions for the expected CSV forma
             </div>
         </div>
 
+    </div>
+
+    <!-- Add Person Modal -->
+    <div id="addPersonModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Person</h3>
+                <button class="modal-close" onclick="closeAddPersonModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="newPersonInput" placeholder="Enter name" maxlength="20">
+                <div class="modal-buttons">
+                    <button class="btn-success" onclick="addNewPerson()">Add</button>
+                    <button class="btn-clear" onclick="closeAddPersonModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/shared.js') }}"></script>

@@ -14,7 +14,7 @@ function createDebtNetwork() {
         console.error('transaction-data script tag not found');
         return;
     }
-    
+
     let originalTransactions = [];
     try {
         originalTransactions = JSON.parse(dataScript.textContent);
@@ -37,19 +37,19 @@ function createDebtNetwork() {
 
     originalTransactions.forEach(transaction => {
         // Handle both old dictionary format and new named tuple format
-        const payer = transaction.payer || transaction.creditor;
+        const creditor = transaction.creditor || transaction.creditor;
         const debtor = transaction.debtor;
         const amount = parseFloat(transaction.amount);
 
-        if (!payer || !debtor || isNaN(amount)) {
+        if (!creditor || !debtor || isNaN(amount)) {
             console.warn('Invalid transaction data:', transaction);
             return;
         }
 
-        people.add(payer);
+        people.add(creditor);
         people.add(debtor);
 
-        const key = `${debtor}->${payer}`; // debtor owes money to payer
+        const key = `${debtor}->${creditor}`; // debtor owes money to creditor
         if (debtMap.has(key)) {
             debtMap.set(key, debtMap.get(key) + amount);
         } else {
@@ -69,18 +69,18 @@ function createDebtNetwork() {
         console.error('debtNetworkSvg element not found');
         return;
     }
-    
+
     const svgWidth = 800;
     const svgHeight = 600;
 
     // Clear existing content
     svg.innerHTML = '';
-    
+
     // Get theme-appropriate colors
     const isDarkTheme = document.documentElement.getAttribute('data-theme') !== 'light';
     const colors = {
         nodeColor: isDarkTheme ? '#4a9eff' : '#007bff',
-        nodeStroke: isDarkTheme ? '#2d2d2d' : '#ffffff', 
+        nodeStroke: isDarkTheme ? '#2d2d2d' : '#ffffff',
         arrowColor: isDarkTheme ? '#ef4444' : '#dc3545',
         textColor: isDarkTheme ? '#ffffff' : '#333333',
         bgColor: isDarkTheme ? '#2d2d2d' : '#ffffff',

@@ -1,247 +1,386 @@
-let allTransactions = []; // Combined CSV and manual transactions
+// Visual Transaction Builder - Click-based Interface
+let allTransactions = [];
 let allNames = new Set();
-let uploadedFiles = new Map(); // Track uploaded files and their transaction counts
+let uploadedFiles = new Map();
 
-// Focus on first input when page loads
+// Transaction builder state
+let transactionBuilder = {
+    creditor: null,
+    amount: null,
+    debtors: [],
+    step: 1
+};
+
+// Initialize the interface
 document.addEventListener('DOMContentLoaded', function() {
     initTheme();
-    document.getElementById('payerInput').focus();
+    initializeInterface();
+    loadPersonsFromExistingData();
 });
 
-// Handle Enter key to add transaction
-document.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        addTransaction();
-    }
-});
+function initializeInterface() {
+    // Initialize with step 1 (creditor selection) - no need to call showStep since step 1 is always visible
+    updatePersonChips();
 
-// Removed custom Tab key navigation to allow normal browser Tab behavior
+    // Set up Enter key for modal
+    document.getElementById('newPersonInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addNewPerson();
+        }
+    });
 
-// Autocomplete functionality
-function setupAutocomplete(inputId, suggestionsId) {
-    const input = document.getElementById(inputId);
-    const suggestions = document.getElementById(suggestionsId);
+    // Set up custom amount input to trigger step advancement
+    document.getElementById('customAmountInput').addEventListener('input', function() {
+        selectCustomAmount();
+    });
+}
 
-    input.addEventListener('input', function() {
-        const value = this.value.toLowerCase();
-        suggestions.innerHTML = '';
+function loadPersonsFromExistingData() {
+    // This will be called after CSV files are loaded
+    updatePersonChips();
+}
 
-        if (value.length > 0) {
-            const matches = Array.from(allNames).filter(name =>
-                name.toLowerCase().includes(value)
-            );
+// Person Management
+function updatePersonChips() {
+    const allPersonChips = document.getElementById('allPersonChips');
+    const creditorChips = document.getElementById('creditorChips');
+    const debtorChips = document.getElementById('debtorChips');
 
-            if (matches.length > 0) {
-                matches.slice(0, 5).forEach(name => {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-suggestion';
-                    div.textContent = name;
-                    div.onclick = function() {
-                        input.value = name;
-                        suggestions.innerHTML = '';
-                    };
-                    suggestions.appendChild(div);
-                });
+    const peopleArray = Array.from(allNames).sort();
+
+    // Update all people chips (for management section) - display only
+    if (allPersonChips) {
+        allPersonChips.innerHTML = '';
+        peopleArray.forEach(person => {
+            const chip = createPersonChip(person, 'display');
+            // Add visual indicator if person is selected as creditor
+            if (transactionBuilder.creditor === person) {
+                chip.classList.add('is-creditor');
             }
-        }
-    });
-
-    // Hide suggestions when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!input.contains(e.target) && !suggestions.contains(e.target)) {
-            suggestions.innerHTML = '';
-        }
-    });
-}
-
-setupAutocomplete('payerInput', 'payerSuggestions');
-
-// Set up autocomplete for initial debtor
-setupAutocompleteForDebtor(0);
-
-// Multiple debtor functionality
-let debtorCount = 1;
-
-function setupAutocompleteForDebtor(index) {
-    const debtorInput = document.querySelector(`.debtor-entry[data-index="${index}"] .debtor-name`);
-    if (debtorInput) {
-        setupAutocompleteForElement(debtorInput, `debtor-suggestions-${index}`);
-    }
-}
-
-function setupAutocompleteForElement(input, suggestionsId) {
-    // Create suggestions div if it doesn't exist
-    let suggestions = document.getElementById(suggestionsId);
-    if (!suggestions) {
-        suggestions = document.createElement('div');
-        suggestions.id = suggestionsId;
-        suggestions.className = 'autocomplete-suggestions';
-        input.parentNode.appendChild(suggestions);
-    }
-
-    input.addEventListener('input', function() {
-        const value = this.value.toLowerCase();
-        suggestions.innerHTML = '';
-
-        if (value.length > 0) {
-            const matches = Array.from(allNames).filter(name =>
-                name.toLowerCase().includes(value)
-            );
-
-            if (matches.length > 0) {
-                matches.slice(0, 5).forEach(name => {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-suggestion';
-                    div.textContent = name;
-                    div.onclick = function() {
-                        input.value = name;
-                        suggestions.innerHTML = '';
-                    };
-                    suggestions.appendChild(div);
-                });
+            // Add visual indicator if person is selected as debtor
+            if (transactionBuilder.debtors.some(d => d.name === person)) {
+                chip.classList.add('is-debtor');
             }
-        }
-    });
+            allPersonChips.appendChild(chip);
+        });
+    }
 
-    // Removed custom Tab key navigation to allow normal browser Tab behavior
+    // Update creditor chips
+    if (creditorChips) {
+        creditorChips.innerHTML = '';
+        peopleArray.forEach(person => {
+            const chip = createPersonChip(person, 'creditor');
+            creditorChips.appendChild(chip);
+        });
+    }
 
-    // Hide suggestions when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!input.contains(e.target) && !suggestions.contains(e.target)) {
-            suggestions.innerHTML = '';
-        }
-    });
+    // Update debtor chips
+    if (debtorChips) {
+        debtorChips.innerHTML = '';
+        peopleArray.forEach(person => {
+            const chip = createPersonChip(person, 'debtor');
+            // Disable if already selected as creditor
+            if (transactionBuilder.creditor === person) {
+                chip.classList.add('disabled');
+            }
+            debtorChips.appendChild(chip);
+        });
+    }
 }
 
-function addDebtor() {
-    const debtorsList = document.getElementById('debtorsList');
+function createPersonChip(name, type) {
+    const chip = document.createElement('div');
+    chip.className = 'person-chip';
+    chip.onclick = () => selectPerson(name, type);
 
-    // Calculate current total percentage before adding new debtor
-    const currentEntries = document.querySelectorAll('.debtor-entry');
-    let currentTotal = 0;
-    currentEntries.forEach(entry => {
-        const percentage = parseFloat(entry.querySelector('.debtor-percentage').value) || 0;
-        currentTotal += percentage;
+    // Check if selected
+    if (type === 'creditor' && transactionBuilder.creditor === name) {
+        chip.classList.add('selected');
+    } else if (type === 'debtor' && transactionBuilder.debtors.some(d => d.name === name)) {
+        chip.classList.add('selected');
+    }
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = name;
+
+    chip.appendChild(nameSpan);
+
+    return chip;
+}
+
+function selectPerson(name, type) {
+    if (type === 'creditor') {
+        transactionBuilder.creditor = name;
+        updatePersonChips();
+        showStep(2);
+    } else if (type === 'debtor') {
+        // Toggle debtor selection
+        const existingIndex = transactionBuilder.debtors.findIndex(d => d.name === name);
+        if (existingIndex >= 0) {
+            transactionBuilder.debtors.splice(existingIndex, 1);
+        } else {
+            // Initialize with equal percentage if this is the first debtor, otherwise 0
+            const initialPercentage = transactionBuilder.debtors.length === 0 ? 100 : 0;
+            transactionBuilder.debtors.push({ name: name, percentage: initialPercentage, amount: 0 });
+        }
+
+        // If we have debtors, automatically set equal split
+        if (transactionBuilder.debtors.length > 0) {
+            equalSplit();
+        }
+
+        updatePersonChips();
+        updateSelectedDebtors();
+
+        if (transactionBuilder.debtors.length > 0) {
+            showStep(3);
+        } else {
+            // Hide step 3 and 4 if no debtors
+            document.getElementById('amountStep').style.display = 'none';
+        }
+    }
+}
+
+// Amount Selection
+function selectCustomAmount() {
+    const input = document.getElementById('customAmountInput');
+    const value = parseFloat(input.value);
+
+    if (value && value > 0) {
+        transactionBuilder.amount = value;
+        updateDebtorAmounts(); // Calculate debtor amounts
+        showStep(4);
+    }
+}
+
+// Step Management
+function showStep(stepNumber) {
+    transactionBuilder.step = stepNumber;
+
+    const steps = ['debtorStep', 'amountStep'];
+
+    // Show/hide steps
+    steps.forEach((stepId, index) => {
+        const step = document.getElementById(stepId);
+        if (step) {
+            step.style.display = (index + 2 <= stepNumber) ? 'block' : 'none';
+        }
     });
 
-    const newEntry = document.createElement('div');
-    newEntry.className = 'debtor-entry';
-    newEntry.setAttribute('data-index', debtorCount);
+    // Update person chips when showing debtor step
+    if (stepNumber >= 2) {
+        updatePersonChips();
+    }
 
-    // Calculate remaining percentage for new debtor
-    const remainingPercentage = Math.max(0, 100 - currentTotal);
+    // Update transaction preview when showing confirm step
+    if (stepNumber >= 4) {
+        updateDebtorAmounts(); // Recalculate amounts
+    }
+}
 
-    newEntry.innerHTML = `
-        <div class="form-group" style="margin-bottom: 8px;">
-            <div class="input-container" style="flex: 2;">
-                <input type="text" class="debtor-name" placeholder="Who received?" autocomplete="off">
-            </div>
-            <span style="min-width: 40px;">gets</span>
-            <input type="number" class="debtor-percentage" placeholder="%" step="0.1" min="0" max="100" style="width: 70px;" onchange="updateDebtorAmounts()" value="${remainingPercentage.toFixed(1)}">
-            <span style="min-width: 15px;">%</span>
-            <span class="debtor-amount" style="min-width: 80px; font-weight: bold; color: var(--accent-green);">$0.00</span>
-            <button class="btn-danger btn-small" onclick="removeDebtor(${debtorCount})" style="margin-left: 8px;">×</button>
-        </div>
-    `;
 
-    debtorsList.appendChild(newEntry);
-    setupAutocompleteForDebtor(debtorCount);
-    debtorCount++;
+function updateSelectedDebtors() {
+    const container = document.getElementById('selectedDebtors');
+    const list = document.getElementById('selectedDebtorsList');
 
-    // Show remove buttons when there's more than one debtor
-    updateRemoveButtons();
+    if (transactionBuilder.debtors.length > 0) {
+        list.innerHTML = '';
 
-    // Update amounts to reflect the new debtor
+        transactionBuilder.debtors.forEach((debtor, index) => {
+            const item = document.createElement('div');
+            item.className = 'selected-debtor-item';
+
+            item.innerHTML = `
+                <div class="debtor-info">
+                    <span class="debtor-name">${debtor.name}</span>
+                    <span class="debtor-amount">$${debtor.amount.toFixed(2)}</span>
+                </div>
+                <div class="percentage-controls">
+                    <button class="percentage-btn" onclick="adjustPercentage(${index}, -5)">-</button>
+                    <input type="number" class="percentage-input" value="${debtor.percentage.toFixed(1)}"
+                           onchange="updateDebtorPercentage(${index}, this.value)" min="0" max="100" step="0.1">
+                    <span>%</span>
+                    <button class="percentage-btn" onclick="adjustPercentage(${index}, 5)">+</button>
+                    <button class="clear-selection" onclick="removeDebtor('${debtor.name}')">&times;</button>
+                </div>
+            `;
+
+            list.appendChild(item);
+        });
+
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+// Debtor Management
+function adjustPercentage(index, change) {
+    const debtor = transactionBuilder.debtors[index];
+    debtor.percentage = Math.max(0, Math.min(100, debtor.percentage + change));
     updateDebtorAmounts();
 }
 
-function removeDebtor(index) {
-    const entry = document.querySelector(`.debtor-entry[data-index="${index}"]`);
-    if (entry) {
-        entry.remove();
-        updateRemoveButtons();
-        // Auto-fill equal percentages for remaining debtors
-        autoFillPercentages();
-    }
-}
-
-function updateRemoveButtons() {
-    const entries = document.querySelectorAll('.debtor-entry');
-    entries.forEach((entry, index) => {
-        const removeBtn = entry.querySelector('.btn-danger');
-        if (entries.length > 1) {
-            removeBtn.style.display = 'inline-block';
-        } else {
-            removeBtn.style.display = 'none';
-        }
-    });
+function updateDebtorPercentage(index, value) {
+    const percentage = Math.max(0, Math.min(100, parseFloat(value) || 0));
+    transactionBuilder.debtors[index].percentage = percentage;
+    updateDebtorAmounts();
 }
 
 function updateDebtorAmounts() {
-    const totalAmount = parseFloat(document.getElementById('amountInput').value) || 0;
-    const debtorEntries = document.querySelectorAll('.debtor-entry');
-    let totalPercentage = 0;
+    if (transactionBuilder.amount) {
+        transactionBuilder.debtors.forEach(debtor => {
+            debtor.amount = Math.round(transactionBuilder.amount * debtor.percentage) / 100;
+        });
+    }
+    updateSelectedDebtors();
+}
 
-    debtorEntries.forEach(entry => {
-        const percentageInput = entry.querySelector('.debtor-percentage');
-        const amountSpan = entry.querySelector('.debtor-amount');
-        const percentage = parseFloat(percentageInput.value) || 0;
-        const amount = (totalAmount * percentage) / 100;
+function removeDebtor(name) {
+    const index = transactionBuilder.debtors.findIndex(d => d.name === name);
+    if (index >= 0) {
+        transactionBuilder.debtors.splice(index, 1);
+    }
+    updatePersonChips();
+    updateSelectedDebtors();
+}
 
-        amountSpan.textContent = `$${amount.toFixed(2)}`;
-        totalPercentage += percentage;
-    });
+function equalSplit() {
+    const numDebtors = transactionBuilder.debtors.length;
+    if (numDebtors > 0) {
+        const percentage = 100 / numDebtors;
+        transactionBuilder.debtors.forEach(debtor => {
+            debtor.percentage = percentage;
+        });
+        updateDebtorAmounts();
+    }
+}
 
-    // Update total percentage display
-    const totalPercentageSpan = document.getElementById('totalPercentage');
-    totalPercentageSpan.textContent = `Total: ${totalPercentage.toFixed(1)}%`;
 
-    // Color code the percentage
-    if (totalPercentage === 100) {
-        totalPercentageSpan.style.color = 'var(--accent-green)';
-    } else if (totalPercentage > 100) {
-        totalPercentageSpan.style.color = 'var(--accent-red)';
-    } else {
-        totalPercentageSpan.style.color = 'var(--text-muted)';
+function startOver() {
+    transactionBuilder = {
+        creditor: null,
+        amount: null,
+        debtors: [],
+        step: 1
+    };
+
+    // Hide all steps
+    document.getElementById('selectedDebtors').style.display = 'none';
+    document.getElementById('amountStep').style.display = 'none';
+    document.getElementById('debtorStep').style.display = 'none';
+
+    // Clear inputs
+    document.getElementById('customAmountInput').value = '';
+
+    // Update chips
+    updatePersonChips();
+
+    hideError('errorMessage');
+}
+
+// Modal Functions
+function showAddPersonModal(type) {
+    document.getElementById('addPersonModal').style.display = 'flex';
+    document.getElementById('newPersonInput').value = '';
+    document.getElementById('newPersonInput').focus();
+    document.getElementById('addPersonModal').setAttribute('data-type', type);
+}
+
+function closeAddPersonModal() {
+    document.getElementById('addPersonModal').style.display = 'none';
+}
+
+function addNewPerson() {
+    const input = document.getElementById('newPersonInput');
+    const name = input.value.trim();
+
+    if (!name) {
+        return;
     }
 
-    // Enable/disable add button
-    const addBtn = document.getElementById('addTransactionBtn');
-    const payer = document.getElementById('payerInput').value.trim();
-    const hasValidDebtors = Array.from(debtorEntries).some(entry => {
-        const name = entry.querySelector('.debtor-name').value.trim();
-        const percentage = parseFloat(entry.querySelector('.debtor-percentage').value) || 0;
-        return name && percentage > 0;
-    });
+    if (allNames.has(name)) {
+        showError('Person already exists');
+        return;
+    }
 
-    addBtn.disabled = !(payer && totalAmount > 0 && hasValidDebtors && totalPercentage <= 100);
+    allNames.add(name);
+
+    // Get the type from modal data attribute
+    const modal = document.getElementById('addPersonModal');
+    const type = modal.getAttribute('data-type');
+
+    // Auto-select the newly added person
+    if (type === 'creditor') {
+        selectPerson(name, 'creditor');
+    } else if (type === 'debtor') {
+        selectPerson(name, 'debtor');
+    }
+
+    updatePersonChips();
+    closeAddPersonModal();
 }
 
-function autoFillPercentages() {
-    const debtorEntries = document.querySelectorAll('.debtor-entry');
+// Transaction Management
+function confirmTransaction() {
+    // Validation
+    if (!transactionBuilder.creditor) {
+        showError('Please select a creditor');
+        return;
+    }
 
-    if (debtorEntries.length === 0) return;
+    if (!transactionBuilder.amount || transactionBuilder.amount <= 0) {
+        showError('Please enter a valid amount');
+        return;
+    }
 
-    const percentagePerDebtor = 100 / debtorEntries.length;
-    debtorEntries.forEach(entry => {
-        const percentageInput = entry.querySelector('.debtor-percentage');
-        percentageInput.value = percentagePerDebtor.toFixed(1);
+    if (transactionBuilder.debtors.length === 0) {
+        showError('Please select at least one debtor');
+        return;
+    }
+
+    const totalPercentage = transactionBuilder.debtors.reduce((sum, d) => sum + d.percentage, 0);
+    if (totalPercentage > 100.1) { // Allow small floating point errors
+        showError('Total percentages cannot exceed 100%');
+        return;
+    }
+
+    if (totalPercentage < 0.1) {
+        showError('Please set percentages for debtors');
+        return;
+    }
+
+    // Create transactions
+    transactionBuilder.debtors.forEach(debtor => {
+        if (debtor.amount > 0) {
+            allTransactions.push({
+                creditor: transactionBuilder.creditor,
+                debtor: debtor.name,
+                amount: debtor.amount,
+                source: 'manual',
+                splitInfo: transactionBuilder.debtors.length > 1 ?
+                    `${debtor.percentage.toFixed(1)}% of $${transactionBuilder.amount.toFixed(2)}` : null
+            });
+        }
     });
 
-    updateDebtorAmounts();
+    // Update display
+    updateTransactionsList();
+
+    // Start over for next transaction
+    startOver();
+
+    hideError('errorMessage');
 }
 
-// CSV loading functionality for multiple files
+// CSV Loading (existing functionality)
 function loadCSV() {
     const fileInput = document.getElementById('csvInput');
     const files = fileInput.files;
 
     if (!files || files.length === 0) return;
 
-    // Process each file
     Array.from(files).forEach(file => {
-        // Skip if file already uploaded
         if (uploadedFiles.has(file.name)) {
             showCSVError(`File "${file.name}" is already uploaded.`);
             return;
@@ -259,21 +398,20 @@ function loadCSV() {
                     if (line) {
                         const parts = line.split(',');
                         if (parts.length === 3) {
-                            const payer = parts[0].trim();
+                            const creditor = parts[0].trim();
                             const debtor = parts[1].trim();
-                            const amount = parseFloat(parts[2].trim());
+                            const amount = parseFloat(parts[2]);
 
-                            if (payer && debtor && !isNaN(amount) && amount > 0) {
+                            if (creditor && debtor && !isNaN(amount) && amount > 0) {
                                 csvTransactions.push({
-                                    payer: payer,
+                                    creditor: creditor,
                                     debtor: debtor,
                                     amount: amount,
                                     source: 'csv',
                                     filename: file.name
                                 });
 
-                                // Add names to autocomplete
-                                allNames.add(payer);
+                                allNames.add(creditor);
                                 allNames.add(debtor);
                             }
                         }
@@ -281,15 +419,12 @@ function loadCSV() {
                 }
 
                 if (csvTransactions.length > 0) {
-                    // Add transactions to the main array
                     allTransactions.push(...csvTransactions);
-
-                    // Track the uploaded file
                     uploadedFiles.set(file.name, csvTransactions.length);
 
-                    // Update displays
                     updateTransactionsList();
                     updateUploadedFilesList();
+                    updatePersonChips(); // Update person chips with new names
 
                     document.getElementById('csvErrorMessage').style.display = 'none';
                 } else {
@@ -311,7 +446,6 @@ function showCSVError(message) {
     errorDiv.style.display = 'block';
 }
 
-// Update the uploaded files list display
 function updateUploadedFilesList() {
     const filesList = document.getElementById('uploadedFilesList');
     const filesContainer = document.getElementById('filesContainer');
@@ -338,136 +472,18 @@ function updateUploadedFilesList() {
     });
 }
 
-// Remove all transactions from a specific file
 function removeFileTransactions(filename) {
     if (confirm(`Remove all transactions from "${filename}"?`)) {
-        // Remove transactions from the specific file
         allTransactions = allTransactions.filter(t => t.filename !== filename);
-
-        // Remove file from tracking
         uploadedFiles.delete(filename);
 
-        // Update displays
         updateTransactionsList();
         updateUploadedFilesList();
 
-        // Clear file input if no files remain
         if (uploadedFiles.size === 0) {
             document.getElementById('csvInput').value = '';
         }
     }
-}
-
-function addTransaction() {
-    const payer = document.getElementById('payerInput').value.trim();
-    const totalAmount = parseFloat(document.getElementById('amountInput').value);
-    const debtorEntries = document.querySelectorAll('.debtor-entry');
-
-    // Clear error message
-    hideError('errorMessage');
-
-    // Validation
-    if (!payer || !totalAmount || totalAmount <= 0) {
-        showError('Please fill in payer and total amount');
-        return;
-    }
-
-    // Get valid debtors with percentages
-    const validDebtors = [];
-    let totalPercentage = 0;
-
-    debtorEntries.forEach(entry => {
-        const name = entry.querySelector('.debtor-name').value.trim();
-        const percentage = parseFloat(entry.querySelector('.debtor-percentage').value) || 0;
-
-        if (name && percentage > 0) {
-            if (name.toLowerCase() === payer.toLowerCase()) {
-                showError('Payer cannot owe money to themselves');
-                return;
-            }
-            validDebtors.push({ name, percentage });
-            totalPercentage += percentage;
-        }
-    });
-
-    if (validDebtors.length === 0) {
-        showError('Please add at least one debtor with a valid percentage');
-        return;
-    }
-
-    if (totalPercentage > 100) {
-        showError('Total percentages cannot exceed 100%');
-        return;
-    }
-
-    // Create individual transactions for each debtor
-    validDebtors.forEach(debtor => {
-        const debtorAmount = (totalAmount * debtor.percentage) / 100;
-
-        allTransactions.push({
-            payer: payer,
-            debtor: debtor.name,
-            amount: debtorAmount,
-            source: 'manual',
-            splitInfo: validDebtors.length > 1 ? `${debtor.percentage}% of $${totalAmount.toFixed(2)}` : null
-        });
-
-        // Add names to autocomplete
-        allNames.add(payer);
-        allNames.add(debtor.name);
-    });
-
-    // Clear form
-    clearTransactionForm();
-
-    // Update display
-    updateTransactionsList();
-
-    // Focus back to first input for quick entry
-    document.getElementById('payerInput').focus();
-}
-
-function clearTransactionForm() {
-    // Clear main inputs
-    document.getElementById('payerInput').value = '';
-    document.getElementById('amountInput').value = '';
-
-    // Reset debtors list to single entry
-    const debtorsList = document.getElementById('debtorsList');
-    debtorsList.innerHTML = `
-        <div class="debtor-entry" data-index="0">
-            <div class="form-group" style="margin-bottom: 8px;">
-                <div class="input-container" style="flex: 2;">
-                    <input type="text" class="debtor-name" placeholder="Who received?" autocomplete="off">
-                </div>
-                <span style="min-width: 40px;">gets</span>
-                <input type="number" class="debtor-percentage" placeholder="%" step="0.1" min="0" max="100" style="width: 70px;" onchange="updateDebtorAmounts()">
-                <span style="min-width: 15px;">%</span>
-                <span class="debtor-amount" style="min-width: 80px; font-weight: bold; color: var(--accent-green);">$0.00</span>
-                <button class="btn-danger btn-small" onclick="removeDebtor(0)" style="margin-left: 8px; display: none;">×</button>
-            </div>
-        </div>
-    `;
-
-    // Reset debtor count
-    debtorCount = 1;
-
-    // Set up autocomplete for the reset debtor input
-    setupAutocompleteForDebtor(0);
-
-    // Auto-fill single debtor with 100%
-    const firstPercentageInput = document.querySelector('.debtor-percentage');
-    if (firstPercentageInput) {
-        firstPercentageInput.value = '100';
-    }
-
-    // Update amounts and button state
-    updateDebtorAmounts();
-}
-
-function removeTransaction(index) {
-    allTransactions.splice(index, 1);
-    updateTransactionsList();
 }
 
 function updateTransactionsList() {
@@ -498,7 +514,7 @@ function updateTransactionsList() {
             return `
                 <div class="transaction-item">
                     <div class="transaction-info">
-                        <strong>${t.payer}</strong> paid $${t.amount.toFixed(2)} to <strong>${t.debtor}</strong>
+                        <strong>${t.creditor}</strong> paid $${t.amount.toFixed(2)} to <strong>${t.debtor}</strong>
                         ${splitInfoDisplay}
                         <span class="transaction-source">${sourceLabel}</span>
                     </div>
@@ -512,44 +528,38 @@ function updateTransactionsList() {
     }
 }
 
+function removeTransaction(index) {
+    allTransactions.splice(index, 1);
+    updateTransactionsList();
+}
+
 function clearAllTransactions() {
     if (confirm('Are you sure you want to clear all transactions? This cannot be undone.')) {
         allTransactions = [];
         allNames.clear();
-        uploadedFiles.clear(); // Clear uploaded files tracking
+        uploadedFiles.clear();
 
         updateTransactionsList();
-        updateUploadedFilesList(); // Update files list display
+        updateUploadedFilesList();
+        updatePersonChips();
 
-        // Clear CSV input
         document.getElementById('csvInput').value = '';
 
-        // Clear manual input fields
-        document.getElementById('payerInput').value = '';
-        document.getElementById('amountInput').value = '';
-        
-        // Clear debtor inputs
-        const debtorInputs = document.querySelectorAll('.debtor-name');
-        debtorInputs.forEach(input => input.value = '');
+        startOver();
 
-        // Clear error messages
         document.getElementById('errorMessage').style.display = 'none';
         document.getElementById('csvErrorMessage').style.display = 'none';
     }
 }
 
-// showError function is now in shared.js
-
 function processAllTransactions() {
     if (allTransactions.length === 0) return;
 
-    // Show loading state
     const processBtn = document.getElementById('processAllBtn');
     const originalText = processBtn.textContent;
     processBtn.textContent = '⏳ Processing...';
     processBtn.disabled = true;
 
-    // Send to server
     fetch('/process_manual', {
         method: 'POST',
         headers: {
@@ -557,7 +567,7 @@ function processAllTransactions() {
         },
         body: JSON.stringify({
             transactions: allTransactions.map(t => ({
-                payer: t.payer,
+                creditor: t.creditor,
                 debtor: t.debtor,
                 amount: t.amount
             }))
@@ -571,7 +581,6 @@ function processAllTransactions() {
         }
     })
     .then(html => {
-        // Replace current page with results
         document.open();
         document.write(html);
         document.close();
@@ -583,7 +592,6 @@ function processAllTransactions() {
     });
 }
 
-// Export transactions to CSV using shared function
 function exportTransactionsCSV() {
     exportCSV(allTransactions, 'combined_transactions.csv');
 }

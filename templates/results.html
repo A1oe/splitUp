@@ -80,7 +80,7 @@ Uses Flask/Jinja2 templating to display dynamic data from the Python backend
                     <!-- Loop through original_transactions_list passed from Flask -->
                     {% for transaction in original_transactions_list %}
                         <div class="original-transaction-item">
-                            <!-- Display format: "Payer paid $Amount for Debtor" -->
+                            <!-- Display format: "creditor paid $Amount for Debtor" -->
                             <strong>{{ transaction.creditor }}</strong> paid <strong>${{ "%.2f"|format(transaction.amount) }}</strong> for <strong>{{ transaction.debtor }}</strong>
                         </div>
                     {% endfor %}
